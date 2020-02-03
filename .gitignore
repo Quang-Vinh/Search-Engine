@@ -130,3 +130,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+# Ignore playground python notebook
+src/playground.ipynb
