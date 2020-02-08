@@ -57,7 +57,9 @@ def preprocess(data_path: str, output_path: str) -> None:
     '''
     df = parse_html(data_path)
     df = filter_english(df)
-    df.to_csv(output_path)
+    df['docId'] = df['faculty'] + df['code']
+
+    df.to_csv(output_path, index=False)
     return df
 
 
