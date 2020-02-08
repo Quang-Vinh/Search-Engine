@@ -12,7 +12,6 @@ def parse_html(file_path: str) -> pd.DataFrame:
     Note: There are courses without any description, these will be ignored
     '''
 
-
     with open(file_path, 'r', encoding='utf-8') as infile:
         contents = infile.read()
         soup = BeautifulSoup(contents, 'html.parser')
@@ -44,13 +43,22 @@ def parse_html(file_path: str) -> pd.DataFrame:
     return courses_pd
 
 
-
-def filter_english(courses_df: str) -> pd.DataFrame:
-    return
+def filter_english(courses_df: pd.DataFrame) -> pd.DataFrame:
+    '''
+    Given a dataframe of courses, keeps only the english courses based on the second digit of the course code
+    '''
+    english_courses = courses_df['code'].apply(lambda code: int(code[1]) < 5)
+    return courses_df.loc[english_courses]
 
 
 def preprocess(data_path: str, output_path: str) -> None:
-    return
+    '''
+    Pipeline for preprocessing steps for html of uOttawa courses
+    '''
+    df = parse_html(data_path)
+    df = filter_english(df)
+    df.to_csv(output_path)
+    return df
 
 
 
