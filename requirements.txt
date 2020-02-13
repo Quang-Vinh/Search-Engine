@@ -1,6 +1,7 @@
 # This file may be used to create an environment using:
 # $ conda create --name <env> --file <this file>
 # platform: win-64
+astroid=2.3.3=py38_0
 backcall=0.1.0=py38_0
 beautifulsoup4=4.8.2=py38_0
 blas=1.0=mkl
@@ -11,12 +12,15 @@ decorator=4.4.1=py_0
 icc_rt=2019.0.0=h0cc432a_1
 intel-openmp=2019.4=245
 ipykernel=5.1.4=py38h39e3cac_0
-ipython=7.12.0=py38h5ca1d4c_0
+ipython=7.11.1=py38h39e3cac_0
 ipython_genutils=0.2.0=py38_0
+isort=4.3.21=py38_0
 jedi=0.16.0=py38_0
 jupyter_client=5.3.4=py38_0
 jupyter_core=4.6.1=py38_0
+lazy-object-proxy=1.4.3=py38he774522_0
 libsodium=1.0.16=h9d3ae62_0
+mccabe=0.6.1=py38_1
 mkl=2019.4=245
 mkl-service=2.3.0=py38hb782905_0
 mkl_fft=1.0.15=py38h14836fe_0
@@ -24,18 +28,19 @@ mkl_random=1.1.0=py38hf9181ef_0
 nltk=3.4.5=py38_0
 numpy=1.18.1=py38h93ca92e_0
 numpy-base=1.18.1=py38hc3f5095_1
-openssl=1.1.1d=he774522_3
+openssl=1.1.1=he774522_0
 pandas=1.0.0=py38h47e9c7a_0
 parso=0.6.0=py_0
 pickleshare=0.7.5=py38_1000
 pip=20.0.2=py38_1
 prompt_toolkit=3.0.3=py_0
 pygments=2.5.2=py_0
+pylint=2.4.4=py38_0
 python=3.8.1=h5fd99cc_1
 python-dateutil=2.8.1=py_0
 pytz=2019.3=py_0
 pywin32=227=py38he774522_1
-pyzmq=18.1.1=py38ha925a31_0
+pyzmq=18.1.0=py38ha925a31_0
 setuptools=45.1.0=py38_0
 six=1.14.0=py38_0
 soupsieve=1.9.5=py38_0
@@ -44,7 +49,8 @@ tornado=6.0.3=py38he774522_0
 traitlets=4.3.3=py38_0
 vc=14.1=h0510ff6_4
 vs2015_runtime=14.16.27012=hf0eaf9b_1
-wcwidth=0.1.8=py_0
+wcwidth=0.1.7=py38_0
 wheel=0.34.1=py38_0
 wincertstore=0.2=py38_0
+wrapt=1.11.2=py38he774522_0
 zeromq=4.3.1=h33f27b4_3
