@@ -11,8 +11,7 @@ class InvertedIndex():
     Inverted index data structure for given dictionary and corpus. 
     Contains for each term the set of docIDs it is found in and the weight
 
-    Index will be represented as a dictionary mapping every term to a dictionary of postings
-    The dictionary of postings will map every docID to a tuple (frequency, TF-IDF) for given term
+    Index will be represented as a dictionary in form of {term: {docID: {freq, tf-idf} } }
     '''
 
     def __init__(self, dictionary: Dictionary, corpus: list, docIDs: list):
