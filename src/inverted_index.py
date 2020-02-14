@@ -4,7 +4,7 @@
 import numpy as np
 import pandas as pd
 from collections import defaultdict
-from dictionary import Dictionary, preprocess_sentence
+from dictionary import Dictionary
 
 class InvertedIndex():
     '''
@@ -15,8 +15,9 @@ class InvertedIndex():
     '''
 
     def __init__(self, dictionary: Dictionary, corpus: list, docIDs: list):
-        # Set dictionary attribute
+        # Set attributes
         self.dictionary = dictionary
+        self.docIDs = docIDs
         
         # Initialize index with empty lists for all words in dictionary
         self.index = dict()
@@ -26,7 +27,7 @@ class InvertedIndex():
 
         # Populate index with postings docID -> frequency by iterating through each document
         for i in range(0, len(docIDs)):
-            tokens = preprocess_sentence(corpus[i])
+            tokens = dictionary.preprocess_document(corpus[i])
             frequencies = self._count_frequencies(tokens)
 
             for term, frequency in frequencies.items():
@@ -87,11 +88,19 @@ class InvertedIndex():
         return tf_idf
 
 
-    def get_terms(self) -> list:
+    def get_terms(self) -> set:
         '''
         Returns all dictionary terms 
         '''
         return self.dictionary.words
+
+
+    def get_docID_terms(self, docID: str) -> list:
+        '''
+        Returns all terms that match a given docID
+        '''
+        terms = [term for term, docIDs in self.index.items() if docID in docIDs.keys()]
+        return terms
 
     
     def get_postings(self, term: str) -> list:
