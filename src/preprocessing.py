@@ -1,4 +1,4 @@
-# Module 2 
+# Module 2 - Corpus Preprocessing
 # Purpose: Convert a collection of documents into a formatted corpus
 
 import pandas as pd
@@ -33,14 +33,16 @@ def parse_html(file_path: str) -> pd.DataFrame:
 
     # Get course descriptions text
     course_descriptions = [course_description.get_text().replace('\n', '') for course_description in course_descriptions]
-
     
-    courses_pd = pd.DataFrame({'faculty': course_faculties,
+    courses_df = pd.DataFrame({'faculty': course_faculties,
                               'code': course_codes, 
                               'title': course_titles,
                               'description': course_descriptions})
 
-    return courses_pd
+    # Add docIDs
+    courses_df['docID'] = courses_df['faculty'] + courses_df['code']
+
+    return courses_df
 
 
 def filter_english(courses_df: pd.DataFrame) -> pd.DataFrame:
@@ -57,7 +59,6 @@ def preprocess(data_path: str, output_path: str) -> None:
     '''
     df = parse_html(data_path)
     df = filter_english(df)
-    df['docId'] = df['faculty'] + df['code']
 
     df.to_csv(output_path, index=False)
     return df

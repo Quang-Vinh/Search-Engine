@@ -1,4 +1,4 @@
-# Module 3
+# Module 3 - Dictionary Building
 # Purpose: Build a dictionary of terms to be indexed
 
 import pandas as pd 
@@ -18,25 +18,23 @@ def stopword_removal(words: list) -> list:
     return words
 
 
-def stemmatize_tokens(words: list, stemmer) -> str:
+def stem_tokens(words: list, stemmer) -> str:
     '''
-    Stemmatize all words in list
+    Stem all words in list
     '''
     words = [stemmer.stem(word) for word in words]
     return words
 
 
-def normalize_tokens(word: str, remove_hyphen: bool = False, remove_periods: bool = False) -> str:
+def normalize_token(word: str) -> str:
     '''
     Normalizes given word based on 
     a) Hyphens (low-cost becomes lowcost)
     b) Periods (U.S.A becomes USA) 
     '''
-    if remove_hyphen:
-        word = word.replace('-', '')
 
-    if remove_periods:
-        word = word.replace('.', '')
+    word = word.replace('-', '')
+    word = word.replace('.', '')
         
     return word
 
@@ -55,27 +53,44 @@ def tokenize(sent: str) -> list:
     return words
 
 
-def build_dictionary(courses_descriptions: pd.Series, remove_stopword: bool = True, stemmatize: bool = True, normalize: bool = True):
+def preprocess_sentence(sent: str, remove_stopword: bool = True, stem: bool = True, normalize: bool = True) -> list:
     '''
-    Creates dictionary of terms to be indexed
+    Preprocesses a given sentence by tokenizing, removing stopwords, stemming, and normalizing.
+    Returns a list of preprocessed tokens
     '''
 
-    # Get list of all words from collection
-    descriptions = courses_descriptions.apply(tokenize)
-    words = [word for description in descriptions for word in description]
+    words = tokenize(sent)
 
     if remove_stopword:
         words = stopword_removal(words)
     
-    if stemmatize:
+    if stem:
         stemmer = PorterStemmer()
-        words = stemmatize_tokens(words, stemmer) 
-
+        words = stem_tokens(words, stemmer)
+    
     if normalize:
-        words = [normalize_tokens(word, True, True) for word in words]
-
-    # Remove duplicates
-    words = list(set(words))
-    words.sort()
+        words = [normalize_token(word) for word in words]
 
     return words
+
+
+
+
+class Dictionary():
+    '''
+    Dictionary representation for the given corpus
+    '''
+
+    def __init__(self, corpus: list, remove_stopword: bool = True, stem: bool = True, normalize: bool = True):
+        # Get list of all words from collection
+        sentence_tokens = [preprocess_sentence(sentence, remove_stopword, stem, normalize) for sentence in corpus]
+
+        # Flatten out list
+        words = [word for sentence in sentence_tokens for word in sentence]
+
+        # Remove duplicates
+        self.words = list(set(words))
+        self.words.sort()
+
+        self.size = len(self.words)
+        return
