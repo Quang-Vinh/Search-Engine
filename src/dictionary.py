@@ -39,13 +39,13 @@ def normalize_token(word: str) -> str:
     return word
 
 
-def tokenize(sent: str) -> list:
+def tokenize(doc: str) -> list:
     '''
     Tokenizes a string into several words/tokens, just a wrapper function
     '''
-    sent = sent.lower()
-    sent = sent.replace("'", '')
-    words = word_tokenize(sent)
+    doc = doc.lower()
+    doc = doc.replace("'", '')
+    words = word_tokenize(doc)
 
     # Remove tokens that are only special characters, ex ')'
     words = [word for word in words if not re.match(r'^[^A-Za-z0-9]*$', word)]
@@ -53,44 +53,62 @@ def tokenize(sent: str) -> list:
     return words
 
 
-def preprocess_sentence(sent: str, remove_stopword: bool = True, stem: bool = True, normalize: bool = True) -> list:
-    '''
-    Preprocesses a given sentence by tokenizing, removing stopwords, stemming, and normalizing.
-    Returns a list of preprocessed tokens
-    '''
-
-    words = tokenize(sent)
-
-    if remove_stopword:
-        words = stopword_removal(words)
-    
-    if stem:
-        stemmer = PorterStemmer()
-        words = stem_tokens(words, stemmer)
-    
-    if normalize:
-        words = [normalize_token(word) for word in words]
-
-    return words
-
-
-
 
 class Dictionary():
     '''
     Dictionary representation for the given corpus
+
     '''
 
     def __init__(self, corpus: list, remove_stopword: bool = True, stem: bool = True, normalize: bool = True):
+        # Set attributes
+        self.remove_stopword = remove_stopword
+        self.stem = stem
+        self.normalize = normalize
+
         # Get list of all words from collection
-        sentence_tokens = [preprocess_sentence(sentence, remove_stopword, stem, normalize) for sentence in corpus]
+        doc_tokens = [self._preprocess_document(doc, remove_stopword, stem, normalize) for doc in corpus]
 
         # Flatten out list
-        words = [word for sentence in sentence_tokens for word in sentence]
+        words = [word for doc in doc_tokens for word in doc]
 
         # Remove duplicates
-        self.words = list(set(words))
-        self.words.sort()
+        self.words = set(words)
 
         self.size = len(self.words)
         return
+
+
+    def contains(self, word: str) -> bool:
+        '''
+        Returns whether given word is included in the dictionary
+        '''
+        return word in self.words
+
+
+    def preprocess_document(self, doc: str) -> list:
+        '''
+        Preprocess document based on flag attributes
+        '''
+        words = self._preprocess_document(doc, self.remove_stopword, self.stem, self.normalize)
+        return words
+
+
+    def _preprocess_document(self, doc: str, remove_stopword: bool = True, stem: bool = True, normalize: bool = True) -> list:
+        '''
+        Preprocesses a given sentence by tokenizing, removing stopwords, stemming, and normalizing.
+        Returns a list of preprocessed tokens
+        '''
+        words = tokenize(doc)
+
+        if remove_stopword:
+            words = stopword_removal(words)
+        
+        if stem:
+            stemmer = PorterStemmer()
+            words = stem_tokens(words, stemmer)
+        
+        if normalize:
+            words = [normalize_token(word) for word in words]
+
+        return words
