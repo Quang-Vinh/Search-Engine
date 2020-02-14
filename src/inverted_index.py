@@ -59,16 +59,6 @@ class InvertedIndex():
         return frequencies
 
 
-    def get_postings(self, term: str) -> list:
-        '''
-        Return postings associated with given term or None if no term not found in dictionary
-        '''
-        if term in self.index.keys():
-            return self.index[term]
-        else:
-            return None
-
-
     def get_frequency(self, term: str, docID: str) -> float:
         '''
         Returns Frequency weight for given term and document ID 
