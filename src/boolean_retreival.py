@@ -8,6 +8,8 @@ def get_vinhs_garbage_pickle_thing():
 def resolve_single_term(term, index):
     #returns the docIDs for a single search term
     #tempoarity just uses the global dictionary
+    term = dictionary.Dictionary().preprocess_document(term)
+    print(term)
     return index.get_postings(term)
 
 def get_op_parse(query_string):
@@ -60,5 +62,9 @@ def recursive_parse(query_string, index):
 
         
 def retreive_results(query):
+    #wrapper for recursive descent
+    #takes the query string returns a list of doc IDs 
     inv_ind = get_vinhs_garbage_pickle_thing()
     return recursive_parse(query, inv_ind)
+
+print(retreive_results("walking"))
