@@ -61,7 +61,7 @@ class SpellingCorrector():
         return
 
 
-    def check_query(self, query: str, limit: int = 10) -> list:
+    def check_query(self, query: str, limit: int = 10, include_costs: bool = False) -> list:
         '''
         Given query, use weighted edit distance to return list of alternate suggestions in order of most to least rank in form of (suggestedQuery, totalCost)
         If all words in the query are in the lexicon then return original query instead
@@ -86,6 +86,10 @@ class SpellingCorrector():
         # Limit results
         if len(suggested_queries) > limit:
             suggested_queries = suggested_queries[:limit]
+
+        # If don't include costs
+        if not include_costs:
+            suggested_queries = [query for query, _ in suggested_queries]
 
         return suggested_queries
 
