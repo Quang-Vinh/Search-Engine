@@ -59,7 +59,7 @@ class SearchScreen(GridLayout):
 
         # Get search results
         if (self.ids['vsm'].active):
-            docIDs = self.vsm_model.search(query)        
+            docIDs = self.vsm_model.search(query, limit = 100)        
         else:
             return
 
