@@ -66,6 +66,10 @@ class Dictionary():
         self.stem = stem
         self.normalize = normalize
 
+        # Keep raw unprocessed words from corpus
+        words_raw_tokens = [tokenize(doc) for doc in corpus]
+        self.words_raw = set([word for tokens in words_raw_tokens for word in tokens])
+
         # Get list of all words from collection
         doc_tokens = [self._preprocess_document(doc, remove_stopword, stem, normalize) for doc in corpus]
 
