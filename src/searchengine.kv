@@ -1,0 +1,92 @@
+#:kivy 1.11.1
+
+<SearchScreen>
+
+    cols: 1
+    size: root.width, root.height
+    layout_content: search_results_grid
+    
+    Label:
+        text: 'SearchGo'
+        size_hint_y: '0.1dp'
+
+    BoxLayout:
+        orientation: 'horizontal'
+
+        BoxLayout:    
+            size_hint_x: '0.5dp'
+            orientation: 'vertical'
+
+            BoxLayout:
+                orientation: 'vertical'
+                Label: 
+                    text: 'Search model type'
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: '0.5dp'
+                    BoxLayout:
+                        orientation: 'vertical'
+                        Label:
+                            text: 'VSM'
+                        CheckBox:
+                            group: 'model'
+                            id: vsm
+                            active: True
+                    BoxLayout:
+                        orientation: 'vertical'
+                        Label:
+                            text: 'Boolean model'
+                        CheckBox:
+                            group: 'model'
+                            id: boolean
+
+            BoxLayout:
+                orientation: 'vertical'            
+                Label:
+                    text: 'Collection'            
+                BoxLayout: 
+                    orientation: 'horizontal'
+                    BoxLayout: 
+                        orientation: 'vertical'
+                        Label: 
+                            text: 'UofO Courses'
+                        CheckBox:
+                            group: 'collection'
+                            id: uo_courses
+                            active: True
+                    BoxLayout:
+                        orientation: 'vertical'
+                        Label:
+                            text: 'Reuters'
+                        CheckBox:
+                            group: 'collection'
+                            id: reuters
+                            
+            TextInput:
+                id: search_query_input
+                size_hint_y: '0.5dp'
+                hint_text: 'Search query'
+
+            Button:
+                text: 'Search'
+                size_hint_y: '0.5dp'
+                on_press: root.search()
+        
+            Label:
+                text: 'Did you mean'
+                size_hint_y: '0.25dp'
+
+            ScrollView:
+                size: self.size
+                GridLayout:
+                    id: suggested_queries_grid
+                    size_hint_y: None
+                    cols: 3
+
+
+        ScrollView:
+            size: self.size
+            GridLayout:
+                id: search_results_grid
+                size_hint_y: None
+                cols: 1
