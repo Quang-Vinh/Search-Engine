@@ -3,7 +3,7 @@
 
 from preprocessing import preprocess
 from dictionary import Dictionary
-from inverted_index import InvertedIndex
+from inverted_index import InvertedIndex, save_index
 
 import pickle
 
@@ -23,4 +23,4 @@ if __name__ == '__main__':
     courses_index = InvertedIndex(courses_dictionary, courses['description'].to_list(), courses['docID'].to_list())
 
     # Save index
-    pickle.dump(courses_index, open(uo_courses_index_path, 'wb'))
+    save_index(courses_index, uo_courses_index_path)
