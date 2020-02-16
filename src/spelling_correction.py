@@ -64,14 +64,18 @@ class SpellingCorrector():
     def check_query(self, query: str, limit: int = 10, include_costs: bool = False) -> list:
         '''
         Given query, use weighted edit distance to return list of alternate suggestions in order of most to least rank in form of (suggestedQuery, totalCost)
-        If all words in the query are in the lexicon then return original query instead
+        If all words in the query are in the lexicon then return empty list instead
         '''
+
+        # If empty return original query
+        if query == '':
+            return []
 
         words = query.split(' ')
         
         # Check if words are all in lexicon
         if set([word in self.lexicon for word in words]) == {True}:
-            return [(query, 0)]
+            return []
 
         # Get closest words in lexicon based on edit distance for all words in the query
         word_suggestions = [self.check_word(word) for word in words]
