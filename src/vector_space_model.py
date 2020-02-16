@@ -27,9 +27,10 @@ class VectorSpaceModel():
     
     def search(self, query: str, similarity: str = 'inner-product', limit: int = 10) -> list:
         '''
-        Given query string searches through documents to find best matches and returns list of docIDs in order of high to low rank, but will exclude documents with similarity of 0
+        Given query string searches through documents to find best matches and returns docIDs with best match, but will exclude documents with similarity of 0.
         Query weights for each term are set to 1
         Uses either "inner-product" or "cosine" for similarity 
+        Returns a list of tuples (docID, similarity)
         '''
         if similarity not in ['inner-product', 'cosine']:
             print('Similarity not defined')
