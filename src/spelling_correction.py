@@ -72,6 +72,9 @@ class SpellingCorrector():
             return []
 
         words = query.split(' ')
+
+        # Minimize all words
+        words = [word.lower() for word in words]
         
         # Check if words are all in lexicon
         if set([word in self.lexicon for word in words]) == {True}:
