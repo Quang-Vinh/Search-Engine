@@ -3,8 +3,10 @@
 
 import numpy as np
 import pandas as pd
+import pickle
 from collections import defaultdict
 from dictionary import Dictionary
+
 
 class InvertedIndex():
     '''
@@ -114,3 +116,24 @@ class InvertedIndex():
         postings = list(self.index[term].keys())
         postings.sort()
         return postings
+
+
+
+def save_index(index: InvertedIndex, output_path: str) -> None:
+    '''
+    Save given index as a pickle
+    '''
+    with open(output_path, 'wb') as outfile:
+        pickle.dump(index, outfile)
+
+    return 
+
+
+def load_index(index_path: str) -> InvertedIndex:
+    '''
+    Load pickled index
+    '''
+    with open(index_path, 'rb') as infile:
+        index = pickle.load(infile)
+
+    return index
