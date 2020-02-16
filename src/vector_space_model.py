@@ -25,7 +25,7 @@ class VectorSpaceModel():
         return
 
     
-    def search(self, query: str, similarity: str = 'inner-product', limit: int = 10) -> list:
+    def search(self, query: str, similarity: str = 'inner-product', limit: int = 10, include_similarities: bool = False) -> list:
         '''
         Given query string searches through documents to find best matches and returns docIDs with best match, but will exclude documents with similarity of 0.
         Query weights for each term are set to 1
@@ -41,22 +41,26 @@ class VectorSpaceModel():
 
         # Calculate similarity for all documents
         if similarity == 'inner-product':
-            similarities = self._inner_product(query_tokens)
+            query_results = self._inner_product(query_tokens)
         elif similarity == 'cosine':
-            similarities = self._cosine_sim(query_tokens)
+            query_results = self._cosine_sim(query_tokens)
 
         # Sort docIDs in order of decreasing similarity values
-        similarities = list(similarities.items())
-        similarities.sort(key = lambda pair: pair[1], reverse = True)
+        query_results = list(query_results.items())
+        query_results.sort(key = lambda pair: pair[1], reverse = True)
 
         # Remove documents with 0 similarity
-        similarities = [sim for sim in similarities if sim[1] != 0]
+        query_results = [sim for sim in query_results if sim[1] != 0]
 
         # Limit search results by amount
-        if limit < len(similarities):
-            similarities = similarities[:limit]
+        if limit < len(query_results):
+            query_results = query_results[:limit]
 
-        return similarities
+        # If don't include similarity
+        if not include_similarities:
+            query_results = [docID for docID, _ in query_results]
+
+        return query_results
 
 
     def _inner_product(self, query_tokens: list) -> dict:
