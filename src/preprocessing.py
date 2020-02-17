@@ -25,11 +25,10 @@ def parse_html(file_path: str) -> pd.DataFrame:
 
     # Get course id and name from titles
     course_faculties = [re.search('[A-z]{3}', course)[0] for course in courses]
-    course_codes = [re.search('[0-9]{4}', course)[0] for course in courses]
+    course_codes = [re.search('[0-9]{4,5}', course)[0] for course in courses]
     course_titles = [re.sub(
                         '[A-z]{3} [0-9]{4} ',
-                        '',
-                        re.sub(' \\(3.+\\)', '', course)) for course in courses]
+                        '', course) for course in courses]
 
     # Get course descriptions text
     course_descriptions = [course_description.get_text().replace('\n', '') for course_description in course_descriptions]
