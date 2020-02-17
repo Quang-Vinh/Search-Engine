@@ -55,7 +55,7 @@ class SpellingCorrector():
 
     def __init__(self, lexicon: list):
         # Set attributes
-        self.lexicon = set([self.preprocess_word(word) for word in lexicon])
+        self.lexicon = set([self._preprocess_string(word) for word in lexicon])
 
         # Remove empty string if it exists
         if '' in self.lexicon:
@@ -74,10 +74,13 @@ class SpellingCorrector():
         if query == '':
             return []
 
+        # Remove all special characters except for () - for boolean queries
+        query = re.sub(r'[^a-zA-Z\(\)] ', '', query)
+
         words = query.split(' ')
 
-        # Minimize all words
-        words = [word.lower() for word in words]
+        # Preprocess all words
+        words = [self._preprocess_string(word) for word in words]
         
         # Check if words are all in lexicon
         if set([word in self.lexicon for word in words]) == {True}:
@@ -88,7 +91,10 @@ class SpellingCorrector():
 
         # Get all combinations of suggestions - https://stackoverflow.com/questions/12935194/combinations-between-two-lists
         suggested_queries = list(itertools.product(*word_suggestions))
-        suggested_queries = [self._join_words(word_costs) for word_costs in suggested_queries]
+        suggested_queries = [self._join_words(query, word_costs) for word_costs in suggested_queries]
+
+        # Remove queries which are same as input query - due to current handling of * TODO: fix 
+        suggested_queries = [(word, cost) for word, cost in suggested_queries if word.lower() != query.lower()]
 
         # Sort on total cost
         suggested_queries.sort(key = lambda pair: pair[1])
@@ -104,14 +110,26 @@ class SpellingCorrector():
         return suggested_queries
 
 
-    def _join_words(self, word_costs: list) -> tuple:
+    def _join_words(self, query: str,  word_costs: list) -> tuple:
         '''
         Helper function for self.check_query. Given a list of tuples (word, cost) concatenate all words and sum all costs to return (query, totalCost)
+        Works also for boolean queries with AND/OR/AND_NOT and () brackets and wildcards *
         '''
 
-        # Get query
-        words = [word for word, _ in word_costs]
-        query = ' '.join(words)
+        # Get new query
+        query = query.split(' ')
+
+        for i in range(len(query)):
+            # If there's a wildcard, just skip
+            if '*' in query[i]:
+                continue
+
+            # Keep brackets, replace only the words
+            query[i] = re.sub('[a-zA-Z]+', word_costs[i][0], query[i])
+            if (query[i] in {'and', 'or', 'and_not'}): 
+                query[i] = query[i].upper()
+                
+        query = ' '.join(query)
 
         # Get cost
         costs = [cost for _, cost in word_costs]
@@ -132,7 +150,7 @@ class SpellingCorrector():
             return [(word, 0)]
 
         # Preprocess word before comparing with lexicon
-        word = self.preprocess_word(word)
+        word = self._preprocess_string(word)
 
         # Compare with only words with same starting letter
         if same_first_letter:
@@ -153,7 +171,7 @@ class SpellingCorrector():
         return edit_distances
 
 
-    def preprocess_word(self, word: str) -> str:
+    def _preprocess_string(self, word: str) -> str:
         '''
         Normalize words for spelling correction. 
         Keeps only letters and converts to lower case
