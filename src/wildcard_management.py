@@ -7,7 +7,7 @@ def get_inv_index():
 
 def get_bigram_index():
     #returns the bigram : words index
-    words = get_inv_index().dictionary.words
+    words = get_inv_index().dictionary.words_raw
     bigram_index = {}
     for word in words:
         if '$' + word[0] not in bigram_index:
