@@ -17,59 +17,66 @@
             size_hint_x: '0.5dp'
             orientation: 'vertical'
 
-            BoxLayout:
-                orientation: 'vertical'
-                Label: 
-                    text: 'Search model type'
-                BoxLayout:
-                    orientation: 'horizontal'
-                    size_hint_y: '0.5dp'
-                    BoxLayout:
-                        orientation: 'vertical'
-                        Label:
-                            text: 'VSM'
-                        CheckBox:
-                            group: 'model'
-                            id: vsm
-                            active: True
-                    BoxLayout:
-                        orientation: 'vertical'
-                        Label:
-                            text: 'Boolean model'
-                        CheckBox:
-                            group: 'model'
-                            id: boolean
 
             BoxLayout:
-                orientation: 'vertical'            
-                Label:
-                    text: 'Collection'            
-                BoxLayout: 
-                    orientation: 'horizontal'
-                    BoxLayout: 
-                        orientation: 'vertical'
-                        Label: 
-                            text: 'UofO Courses'
-                        CheckBox:
-                            group: 'collection'
-                            id: uo_courses
-                            active: True
+                orientation: 'horizontal'
+
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label: 
+                        text: 'Search model type'
+                        size_hint_y: '0.5dp'
                     BoxLayout:
-                        orientation: 'vertical'
-                        Label:
-                            text: 'Reuters'
-                        CheckBox:
-                            group: 'collection'
-                            id: reuters
+                        orientation: 'horizontal'
+                        size_hint_y: '0.5dp'
+                        BoxLayout:
+                            orientation: 'vertical'
+                            Label:
+                                text: 'VSM'
+                            CheckBox:
+                                group: 'model'
+                                id: vsm
+                                active: True
+                        BoxLayout:
+                            orientation: 'vertical'
+                            Label:
+                                text: 'Boolean model'
+                            CheckBox:
+                                group: 'model'
+                                id: boolean
+
+                BoxLayout:
+                    orientation: 'vertical'            
+                    Label:
+                        text: 'Collection'  
+                        size_hint_y: '0.5dp'          
+                    BoxLayout: 
+                        orientation: 'horizontal'
+                        size_hint_y: '0.5dp'
+                        BoxLayout: 
+                            orientation: 'vertical'
+                            Label: 
+                                text: 'UofO Courses'
+                            CheckBox:
+                                group: 'collection'
+                                id: uo_courses
+                                active: True
+                        BoxLayout:
+                            orientation: 'vertical'
+                            Label:
+                                text: 'Reuters'
+                            CheckBox:
+                                group: 'collection'
+                                id: reuters
                             
             TextInput:
                 id: search_query_input
-                size_hint_y: '0.5dp'
+                size_hint_y: '0.25dp'
                 hint_text: 'Search query'
 
             Button:
                 text: 'Search'
-                size_hint_y: '0.5dp'
+                size_hint_y: '0.25dp'
                 on_press: root.search()
         
             Label:
@@ -81,7 +88,9 @@
                 GridLayout:
                     id: suggested_queries_grid
                     size_hint_y: None
-                    cols: 3
+                    cols: 2
+                    # padding: 50
+                    # spacing: 0, 50
 
 
         ScrollView:

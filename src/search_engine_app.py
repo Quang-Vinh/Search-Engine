@@ -61,7 +61,7 @@ class SearchScreen(GridLayout):
         if (self.ids['vsm'].active):
             results = self.vsm_model.search(query, include_similarities = True, limit = 100)        
             docIDs = [docID for docID, _ in results]
-            score = [score for _, score in results]
+            scores = [score for _, score in results]
         else:
             return
 
@@ -71,7 +71,7 @@ class SearchScreen(GridLayout):
         suggested_queries = self.spelling_corrector.check_query(query)
 
         # Update search results
-        search_results['score'] = score
+        search_results['score'] = scores
         self.show_search_results(search_results)
 
         # Update suggested queries
@@ -120,10 +120,11 @@ class SearchScreen(GridLayout):
         docID = instance.text.split('\n')[0].strip()
 
         course = get_uo_courses([docID]).iloc[[0]]
+        course_title = course['title'][0]
         description = course['description'][0]
 
         label = Label(text = textwrap.fill(description, 50))
-        search_result_popup = Popup(title = docID, 
+        search_result_popup = Popup(title = f'{docID} - {course_title}', 
                                     content = label, 
                                     size_hint = (None, None), 
                                     size = (400, 400))
