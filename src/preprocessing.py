@@ -42,6 +42,9 @@ def parse_html(file_path: str) -> pd.DataFrame:
     # Add docIDs
     courses_df['docID'] = courses_df['faculty'] + courses_df['code']
 
+    # Remove duplicates
+    courses_df.drop_duplicates(subset = 'docID', inplace = True)
+
     return courses_df
 
 
