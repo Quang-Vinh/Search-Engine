@@ -24,6 +24,7 @@ import textwrap
 from win32api import GetSystemMetrics
 
 # Search engine modules
+from boolean_retreival import retreive_results
 from corpus_access import get_uo_courses
 from inverted_index import InvertedIndex, load_index
 from spelling_correction import SpellingCorrector
@@ -58,10 +59,13 @@ class SearchScreen(GridLayout):
         query = self.ids['search_query_input'].text
 
         # Get search results
-        if (self.ids['vsm'].active):
+        if self.ids['vsm'].active:
             results = self.vsm_model.search(query, include_similarities = True, limit = 100)        
             docIDs = [docID for docID, _ in results]
             scores = [score for _, score in results]
+        elif self.ids['boolean'].active:
+            docIDs = retreive_results(query)
+            scores = [1] * len(docIDs)
         else:
             return
 
