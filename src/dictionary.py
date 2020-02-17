@@ -47,8 +47,8 @@ def tokenize(doc: str) -> list:
     doc = doc.replace("'", '')
     words = word_tokenize(doc)
 
-    # Remove tokens that are only special characters, ex ')'
-    words = [word for word in words if not re.match(r'^[^A-Za-z0-9]*$', word)]
+    # Remove tokens that are only special characters or numbers, ex ')'
+    words = [word for word in words if not re.match(r'^[^A-Za-z]*$', word)]
 
     return words
 
