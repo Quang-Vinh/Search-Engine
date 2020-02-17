@@ -74,8 +74,8 @@ class SpellingCorrector():
         if query == '':
             return []
 
-        # Remove all special characters except for () - for boolean queries
-        query = re.sub(r'[^a-zA-Z\(\)] ', '', query)
+        # Remove all special characters except for () and _ * - for boolean queries
+        query = re.sub(r'[^a-zA-Z\(\)_\*] ', '', query)
 
         words = query.split(' ')
 
@@ -125,9 +125,11 @@ class SpellingCorrector():
                 continue
 
             # Keep brackets, replace only the words
-            query[i] = re.sub('[a-zA-Z]+', word_costs[i][0], query[i])
-            if (query[i] in {'and', 'or', 'and_not'}): 
-                query[i] = query[i].upper()
+            if (query[i].lower() in {'and', 'or', 'and_not'}): 
+                continue
+            else:
+                query[i] = re.sub('[a-zA-Z]+', word_costs[i][0], query[i])
+
                 
         query = ' '.join(query)
 
