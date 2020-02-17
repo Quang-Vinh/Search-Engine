@@ -1,14 +1,29 @@
 import re
 import pickle
 import dictionary
+import wildcard_management
 
 def get_vinhs_garbage_pickle_thing():
-    return pickle.load(open('../indexes/UofO_courses_index.pkl', 'rb'))
+    return pickle.load(open('../indexes/UofO_Courses_index.pkl', 'rb'))
 
 def resolve_single_term(term, index):
     #returns the docIDs for a single search term
     term = index.dictionary.preprocess_document(term)
-    return index.get_postings(term[0])
+    if term[0].find('*') >= 0:
+        return resolve_wildcard_term(term[0], index)
+    else:
+        result = index.get_postings(term[0])
+        if not result:
+            result = set()
+        return result
+
+def resolve_wildcard_term(term, index):
+    #intersecs all terms in the dictionary matching up with the wildcard
+    matching_words = wildcard_management.get_indexed_words(term)
+    results = set()
+    for word in matching_words:
+        results = results.union(resolve_single_term(word, index))
+    return results
 
 def get_op_parse(query_string):
     #theres got to be a better way but im legit too dumb
