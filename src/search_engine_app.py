@@ -59,7 +59,9 @@ class SearchScreen(GridLayout):
 
         # Get search results
         if (self.ids['vsm'].active):
-            docIDs = self.vsm_model.search(query, limit = 100)        
+            results = self.vsm_model.search(query, include_similarities = True, limit = 100)        
+            docIDs = [docID for docID, _ in results]
+            score = [score for _, score in results]
         else:
             return
 
@@ -69,6 +71,7 @@ class SearchScreen(GridLayout):
         suggested_queries = self.spelling_corrector.check_query(query)
 
         # Update search results
+        search_results['score'] = score
         self.show_search_results(search_results)
 
         # Update suggested queries
@@ -86,13 +89,25 @@ class SearchScreen(GridLayout):
         # Clear previous search results
         search_results_grid.clear_widgets()
 
+        # Add table titles
+        title = Label(text = 'Search Results')
+        score = Label(text = 'Score')
+        search_results_grid.add_widget(title)
+        search_results_grid.add_widget(score)
+
         for docID, course in search_results.iterrows():
+            # Add course info
             description = course['description']
             excerpt = description[:100] if len(description) > 100 else description
             search_result = LabelButton(text = f'{docID} \n {excerpt}', 
                                             size_hint = (1, None))
             search_result.bind(on_press = self.show_search_result_popup)
             search_results_grid.add_widget(search_result)
+
+            # Add score
+            score = course['score']
+            score_label = Label(text = str(score))
+            search_results_grid.add_widget(score_label)
             
         return 
     
