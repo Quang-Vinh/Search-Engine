@@ -56,7 +56,10 @@ class SpellingCorrector():
     def __init__(self, lexicon: list):
         # Set attributes
         self.lexicon = set([self.preprocess_word(word) for word in lexicon])
-        self.lexicon.remove('')
+
+        # Remove empty string if it exists
+        if '' in self.lexicon:
+            self.lexicon.remove('')
 
         return
 
