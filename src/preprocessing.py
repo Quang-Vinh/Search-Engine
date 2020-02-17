@@ -6,6 +6,9 @@ import re
 from bs4 import BeautifulSoup
 
 
+# TODO: French parts of title still showing up
+
+
 def parse_html(file_path: str) -> pd.DataFrame:
     '''
     Reads the html file and returns a dataframe containing structured information
