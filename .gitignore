@@ -1,6 +1,10 @@
 # Taken from https://github.com/github/gitignore/blob/master/Python.gitignore
 
 
+
+# vs-code
+.vscode
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
