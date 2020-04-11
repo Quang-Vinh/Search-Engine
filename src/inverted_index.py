@@ -8,19 +8,19 @@ from collections import defaultdict
 from dictionary import Dictionary
 
 
-class InvertedIndex():
-    '''
+class InvertedIndex:
+    """
     Inverted index data structure for given dictionary and corpus. 
     Contains for each term the set of docIDs it is found in and the weight
 
     Index will be represented as a dictionary in form of {term: {docID: {freq, tf-idf} } }
-    '''
+    """
 
     def __init__(self, dictionary: Dictionary, corpus: list, docIDs: list):
         # Set attributes
         self.dictionary = dictionary
         self.docIDs = docIDs
-        
+
         # Initialize index with empty lists for all words in dictionary
         self.index = dict()
 
@@ -34,8 +34,8 @@ class InvertedIndex():
 
             for term, frequency in frequencies.items():
                 if term in dictionary.words:
-                    self.index[term][docIDs[i]] = {'freq': frequency}
-    
+                    self.index[term][docIDs[i]] = {"freq": frequency}
+
         # Calculate TF-IDF to get postings docID -> frequency, TF-IDF
         for term, postings in self.index.items():
             document_freq = len(postings)
@@ -43,17 +43,16 @@ class InvertedIndex():
 
             # Add TF-IDF weighting for all postings
             for docID, weight in postings.items():
-                tf = np.log10(1 + weight['freq'])
+                tf = np.log10(1 + weight["freq"])
                 tf_idf = tf * idf
-                self.index[term][docID]['tf-idf'] = tf_idf
-        
+                self.index[term][docID]["tf-idf"] = tf_idf
+
         return
 
-
     def _count_frequencies(self, tokens: list) -> dict:
-        '''
+        """
         Count the frequencies of all tokens in the given list, returns a dictionary mapping term to frequency
-        '''
+        """
         frequencies = defaultdict(lambda: 0)
 
         for token in tokens:
@@ -61,55 +60,50 @@ class InvertedIndex():
 
         return frequencies
 
-
     def get_frequency(self, term: str, docID: str) -> float:
-        '''
+        """
         Returns Frequency weight for given term and document ID 
         Returns None if either term or docID is not found
-        '''
+        """
         if term not in self.index.keys():
             return None
         elif docID not in self.index[term].keys():
             return None
 
-        freq = self.index[term][docID]['freq']
+        freq = self.index[term][docID]["freq"]
         return freq
 
-
     def get_tf_idf(self, term: str, docID: str) -> float:
-        '''
+        """
         Returns TF-IDF weight for given term and document ID
         Returns None if either term or docID is not found
-        '''
+        """
         if term not in self.index.keys():
             return None
         elif docID not in self.index[term].keys():
             return None
-        
-        tf_idf = self.index[term][docID]['tf-idf']
+
+        tf_idf = self.index[term][docID]["tf-idf"]
         return tf_idf
 
-
     def get_terms(self) -> set:
-        '''
+        """
         Returns all dictionary terms 
-        '''
+        """
         return self.dictionary.words
 
-
     def get_docID_terms(self, docID: str) -> list:
-        '''
+        """
         Returns all terms that match a given docID
-        '''
+        """
         terms = [term for term, docIDs in self.index.items() if docID in docIDs.keys()]
         return terms
 
-    
     def get_postings(self, term: str) -> list:
-        '''
+        """
         Return postings (docIDs) stored for given term
         Returns None is term is not in dictionary
-        '''
+        """
         if term not in self.index.keys():
             return None
 
@@ -118,22 +112,21 @@ class InvertedIndex():
         return postings
 
 
-
 def save_index(index: InvertedIndex, output_path: str) -> None:
-    '''
+    """
     Save given index as a pickle
-    '''
-    with open(output_path, 'wb') as outfile:
+    """
+    with open(output_path, "wb") as outfile:
         pickle.dump(index, outfile)
 
-    return 
+    return
 
 
 def load_index(index_path: str) -> InvertedIndex:
-    '''
+    """
     Load pickled index
-    '''
-    with open(index_path, 'rb') as infile:
+    """
+    with open(index_path, "rb") as infile:
         index = pickle.load(infile)
 
     return index
