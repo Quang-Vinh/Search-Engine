@@ -1,11 +1,11 @@
 # Search-Engine
-Search Engine project for CSI4107 - Information Retrieval
+Search Engine project for CSI4107 - Information Retrieval. Search engine built on top of UofO courses collection and the reuters text collection.
 
 ## Setup
  
  Required packages are:  
  
- - Python <= 3.7
+ - Python 3.7
  - Kivy
  - Nltk
  - Numpy
@@ -19,9 +19,9 @@ To install packages run
 pip install -r requirements.txt
 ```
 
-Next run setup.py file to setup dictionaries and indexes
+Next setup dictionaries and indexes by running
 ```
-python setup.py
+python make_indexes.py
 ```
 
 ## Usage
