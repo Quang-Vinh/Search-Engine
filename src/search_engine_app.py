@@ -58,7 +58,7 @@ class SearchScreen(GridLayout):
 
         # Get search results
         if self.ids["vsm"].active:
-            results = self.vsm_model.search(query, include_similarities=True, limit=100)
+            results = self.vsm_model.search(query, include_similarities=True, limit=10)
             docIDs = [docID for docID, _ in results]
             scores = [score for _, score in results]
         elif self.ids["boolean"].active:
