@@ -1,4 +1,4 @@
-# Script to setup dictionary/indexes/models for UofO courses
+# Script to setup dictionary/indexes/models for UofO courses and reuters collection
 
 
 from preprocessing import preprocess_uo_courses, preprocess_reuters_all
