@@ -1,9 +1,9 @@
 # Script to setup dictionary/indexes/models for UofO courses
 
 
-from src.preprocessing import preprocess_uo_courses, preprocess_reuters_all
-from src.dictionary import Dictionary
-from src.inverted_index import InvertedIndex, save_index
+from preprocessing import preprocess_uo_courses, preprocess_reuters_all
+from dictionary import Dictionary
+from inverted_index import InvertedIndex, save_index
 
 import pickle
 from pytictoc import TicToc
