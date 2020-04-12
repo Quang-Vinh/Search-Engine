@@ -9,8 +9,8 @@ class BooleanRetrievalModel:
     Initiated with an index pickle object.
     '''
     
-    def __init__(self, pickle_file):
-        self.inv_ind = pickle.load(open("../indexes/{}".format(pickle_file), "rb"))
+    def __init__(self, index):
+        self.inv_ind = index
 
     def resolve_single_term(self, term, index):
         # returns the docIDs for a single search term
@@ -44,7 +44,7 @@ class BooleanRetrievalModel:
             post_arg = query_string[parsed_op.span()[1] :]
             op_arg = parsed_op.group(1)
 
-            if is_proper_parentheses(pre_arg) and is_proper_parentheses(post_arg):
+            if self.is_proper_parentheses(pre_arg) and self.is_proper_parentheses(post_arg):
                 return (pre_arg, op_arg, post_arg)
         return None
 
