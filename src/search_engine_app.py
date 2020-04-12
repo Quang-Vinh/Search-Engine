@@ -19,6 +19,7 @@ from kivy.uix.widget import Widget
 
 # Other libraries
 import pandas as pd
+import pickle
 import re
 import textwrap
 from win32api import GetSystemMetrics
@@ -26,7 +27,7 @@ from win32api import GetSystemMetrics
 # Search engine modules
 from boolean_retrieval import BooleanRetrievalModel
 from corpus_access import get_corpus_texts
-from inverted_index import InvertedIndex, load_index
+from inverted_index import InvertedIndex
 from spelling_correction import SpellingCorrector
 from vector_space_model import VectorSpaceModel
 
@@ -38,12 +39,12 @@ class LabelButton(ButtonBehavior, Label):
 class SearchScreen(GridLayout):
 
     # Load index and setup models
-    uo_index = load_index("../models/indexes/UofO_Courses_index.pkl")
+    uo_index = pickle.load(open("../models/indexes/UofO_Courses_index.pkl", "rb"))
     uo_spelling_corrector = SpellingCorrector(uo_index.dictionary.words_raw)
     uo_vsm_model = VectorSpaceModel(uo_index)
     uo_bool_model = BooleanRetrievalModel(uo_index)
 
-    reuters_index = load_index("../models/indexes/reuters_index.pkl")
+    reuters_index = pickle.load(open("../models/indexes/reuters_index.pkl", "rb"))
     reuters_spelling_corrector = SpellingCorrector(reuters_index.dictionary.words_raw)
     reuters_vsm_model = VectorSpaceModel(reuters_index)
     reuters_bool_model = BooleanRetrievalModel(reuters_index)
