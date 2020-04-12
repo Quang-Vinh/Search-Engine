@@ -12,11 +12,11 @@ class BooleanRetrievalModel:
     def __init__(self, pickle_file):
         self.inv_ind = pickle.load(open("../indexes/{}".format(pickle_file), "rb"))
 
-    def resolve_single_term(term, index):
+    def resolve_single_term(self, term, index):
         # returns the docIDs for a single search term
         term = index.dictionary.preprocess_document(term)
         if term[0].find("*") >= 0:
-            return resolve_wildcard_term(term[0], index)
+            return self.resolve_wildcard_term(term[0], index)
         else:
             result = index.get_postings(term[0])
             if not result:
@@ -24,16 +24,16 @@ class BooleanRetrievalModel:
             return result
 
 
-    def resolve_wildcard_term(term, index):
+    def resolve_wildcard_term(self, term, index):
         # intersecs all terms in the dictionary matching up with the wildcard
         matching_words = wildcard_management.get_indexed_words(term)
         results = set()
         for word in matching_words:
-            results = results.union(resolve_single_term(word, index))
+            results = results.union(self.resolve_single_term(word, index))
         return results
 
 
-    def get_op_parse(query_string):
+    def get_op_parse(self, query_string):
         # theres got to be a better way but im legit too dumb
         level = 0
         pre_arg = ""
@@ -49,7 +49,7 @@ class BooleanRetrievalModel:
         return None
 
 
-    def is_proper_parentheses(expr):
+    def is_proper_parentheses(self, expr):
         # checks if the input expression has properly closed brackets
         level = 0
         for i in expr:
@@ -60,7 +60,7 @@ class BooleanRetrievalModel:
         return level == 0
 
 
-    def handle_operation(set1, set2, operation):
+    def handle_operation(self, set1, set2, operation):
         if operation == "AND":
             return set(set1).intersection(set(set2))
         elif operation == "OR":
@@ -69,26 +69,26 @@ class BooleanRetrievalModel:
             return set(set1) - set(set2)
 
 
-    def recursive_parse(query_string, index):
+    def recursive_parse(self, query_string, index):
         # re.match is left to right right?
         # yeah its left to right
         result = {}
 
         if re.fullmatch("\(.+\)", query_string):
-            result = recursive_parse(query_string[1:-1], index)
+            result = self.recursive_parse(query_string[1:-1], index)
         elif re.fullmatch("(.+)\s(AND|OR|AND_NOT)\s(.+)", query_string):
-            parsed_args = get_op_parse(query_string)
-            result = handle_operation(
-                recursive_parse(parsed_args[0], index),
-                recursive_parse(parsed_args[2], index),
+            parsed_args = self.get_op_parse(query_string)
+            result = self.handle_operation(
+                self.recursive_parse(parsed_args[0], index),
+                self.recursive_parse(parsed_args[2], index),
                 parsed_args[1],
             )
         else:
-            result = resolve_single_term(query_string, index)
+            result = self.resolve_single_term(query_string, index)
         return result
 
 
-    def retreive_results(query):
+    def retrieve_results(self, query):
         # wrapper for recursive descent
         # takes the query string returns a list of doc IDs
-        return recursive_parse(query, self.inv_ind)
+        return self.recursive_parse(query, self.inv_ind)
