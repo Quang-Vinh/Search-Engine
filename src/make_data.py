@@ -11,10 +11,10 @@ from pytictoc import TicToc
 
 if __name__ == "__main__":
     uo_courses_file_path = "../collections/raw/UofO_Courses.html"
-    uo_courses_out_path = "../collections/raw/UofO_Courses_preprocessed.csv"
+    uo_courses_out_path = "../collections/processed/UofO_Courses_preprocessed.csv"
     uo_courses_index_path = "../indexes/UofO_courses_index.pkl"
     reuters_folder_path = "../collections/raw/reuters21578"
-    reuters_out_path = "../collections/raw/reuters_preprocessed.csv"
+    reuters_out_path = "../collections/processed/reuters_preprocessed.csv"
     reuters_index_path = "../indexes/reuters_index.pkl"
 
     t = TicToc()
