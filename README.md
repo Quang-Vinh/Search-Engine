@@ -19,9 +19,9 @@ To install packages run
 pip install -r requirements.txt
 ```
 
-Next setup dictionaries and indexes by running
+Next setup dictionaries and indexes by running command below. Should around 3 minutes.
 ```
-python make_indexes.py
+python make_data.py
 ```
 
 ## Usage
