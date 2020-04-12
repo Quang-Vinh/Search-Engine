@@ -4,7 +4,10 @@
 from collections import defaultdict
 from nltk import bigrams
 from sentence_preprocessing import tokenize
-from typing import List
+from typing import Dict, List
+
+
+# TODO: maybe don't use default dict as each access will add a new entry
 
 
 class BigramLanguageModel:
@@ -16,10 +19,8 @@ class BigramLanguageModel:
 
     def __init__(self, corpus: List[str]):
         # Bigram model represented as {'w1': {'list of w2': {'freq', 'proba}}}
-        self._bigram_model = defaultdict(
-            lambda: defaultdict(lambda: {"freq": 0, "proba": 0})
-        )
-        
+        self._bigram_model = defaultdict(self._create_dd_w2)
+
         # Get tokens and bigrams for each document within corpus
         corpus_tokens = [tokenize(doc) for doc in corpus]
         corpus_bigrams = [bigrams(doc_tokens) for doc_tokens in corpus_tokens]
@@ -29,6 +30,22 @@ class BigramLanguageModel:
 
         self._calculate_bigram_proba()
         return
+
+    def _create_dd_w2(self) -> Dict:
+        '''Helper function to create default dict that can be pickled
+        
+        Returns:
+            Dict -- Default dictionary with default values
+        '''
+        return defaultdict(self._create_dd_val)
+
+    def _create_dd_val(self) -> Dict:
+        '''Helper function to create default dict that can be pickled
+        
+        Returns:
+            Dict -- Default values
+        '''
+        return {'freq': 0, 'proba': 0}
 
     def _calculate_bigram_freq(self, doc_bigrams) -> None:
         """Calculates frequency for each bigram and stores in self._bigram_model
