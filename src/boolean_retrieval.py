@@ -3,12 +3,13 @@ import pickle
 import dictionary
 import wildcard_management
 
+
 class BooleanRetrievalModel:
-    '''
+    """
     Class with methods needed to perform boolean retreival
     Initiated with an index pickle object.
-    '''
-    
+    """
+
     def __init__(self, index):
         self.inv_ind = index
 
@@ -23,7 +24,6 @@ class BooleanRetrievalModel:
                 result = set()
             return result
 
-
     def resolve_wildcard_term(self, term, index):
         # intersecs all terms in the dictionary matching up with the wildcard
         matching_words = wildcard_management.get_indexed_words(term)
@@ -31,7 +31,6 @@ class BooleanRetrievalModel:
         for word in matching_words:
             results = results.union(self.resolve_single_term(word, index))
         return results
-
 
     def get_op_parse(self, query_string):
         # theres got to be a better way but im legit too dumb
@@ -44,10 +43,11 @@ class BooleanRetrievalModel:
             post_arg = query_string[parsed_op.span()[1] :]
             op_arg = parsed_op.group(1)
 
-            if self.is_proper_parentheses(pre_arg) and self.is_proper_parentheses(post_arg):
+            if self.is_proper_parentheses(pre_arg) and self.is_proper_parentheses(
+                post_arg
+            ):
                 return (pre_arg, op_arg, post_arg)
         return None
-
 
     def is_proper_parentheses(self, expr):
         # checks if the input expression has properly closed brackets
@@ -59,7 +59,6 @@ class BooleanRetrievalModel:
                 level -= 1
         return level == 0
 
-
     def handle_operation(self, set1, set2, operation):
         if operation == "AND":
             return set(set1).intersection(set(set2))
@@ -67,7 +66,6 @@ class BooleanRetrievalModel:
             return set(set1).union(set(set2))
         elif operation == "AND_NOT":
             return set(set1) - set(set2)
-
 
     def recursive_parse(self, query_string, index):
         # re.match is left to right right?
@@ -86,7 +84,6 @@ class BooleanRetrievalModel:
         else:
             result = self.resolve_single_term(query_string, index)
         return result
-
 
     def retrieve_results(self, query):
         # wrapper for recursive descent
