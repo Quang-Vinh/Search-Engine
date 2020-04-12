@@ -38,12 +38,12 @@ class LabelButton(ButtonBehavior, Label):
 class SearchScreen(GridLayout):
 
     # Load index and setup models
-    uo_index = load_index("../indexes/UofO_Courses_index.pkl")
+    uo_index = load_index("../models/indexes/UofO_Courses_index.pkl")
     uo_spelling_corrector = SpellingCorrector(uo_index.dictionary.words_raw)
     uo_vsm_model = VectorSpaceModel(uo_index)
     uo_bool_model = BooleanRetrievalModel(uo_index)
 
-    reuters_index = load_index("../indexes/reuters_index.pkl")
+    reuters_index = load_index("../models/indexes/reuters_index.pkl")
     reuters_spelling_corrector = SpellingCorrector(reuters_index.dictionary.words_raw)
     reuters_vsm_model = VectorSpaceModel(reuters_index)
     reuters_bool_model = BooleanRetrievalModel(reuters_index)
