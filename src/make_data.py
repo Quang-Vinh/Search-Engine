@@ -32,14 +32,14 @@ if __name__ == "__main__":
 
     # Create dictionary
     print("Create dictionary UO courses")
-    courses_dictionary = Dictionary(courses["description"].to_list())
+    courses_dictionary = Dictionary(courses["body"].to_list())
     print("Create dictionary Reuters collection")
     reuters_dictionary = Dictionary(reuters_texts["body"].to_list())
 
     # Create inverted index
     print("Create inverted UO courses")
     courses_index = InvertedIndex(
-        courses_dictionary, courses["description"].to_list(), courses["docID"].to_list()
+        courses_dictionary, courses["body"].to_list(), courses["docID"].to_list()
     )
     save_index(courses_index, uo_courses_index_path)
 

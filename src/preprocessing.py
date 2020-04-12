@@ -44,7 +44,7 @@ def parse_uo_courses(file_path: str) -> pd.DataFrame:
             "faculty": course_faculties,
             "code": course_codes,
             "title": course_titles,
-            "description": course_descriptions,
+            "body": course_descriptions,
         }
     )
 
@@ -127,7 +127,7 @@ def preprocess_reuters_file(file_path: str) -> pd.DataFrame:
     text_df = pd.DataFrame(text_data, columns=cols)
 
     # Add reuters meta data
-    IDs = [reuter["newid"] for reuter in reuters]
+    IDs = [int(reuter["newid"]) for reuter in reuters]
     text_df["docID"] = IDs
 
     return text_df

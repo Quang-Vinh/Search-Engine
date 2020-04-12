@@ -9,12 +9,14 @@ import pandas as pd
 uo_courses_corpus = pd.read_csv(
     "../collections/processed/UofO_Courses_preprocessed.csv", index_col="docID"
 )
-reuters_corpus = pd.read_csv('../collections/processed/reuters_preprocessed.csv', index_col='docID')
-corpora = {'uo_courses': uo_courses_corpus, 'reuters': reuters_corpus}
+reuters_corpus = pd.read_csv(
+    "../collections/processed/reuters_preprocessed.csv", index_col="docID"
+)
+corpora = {"uo_courses": uo_courses_corpus, "reuters": reuters_corpus}
 
 
-def get_corpus_texts(corpus:str, docIDs: list) -> pd.DataFrame:
-    '''Returns documents containing matching docIDs for given corpus in same order as input docIDs list
+def get_corpus_texts(corpus: str, docIDs: list) -> pd.DataFrame:
+    """Returns documents containing matching docIDs for given corpus in same order as input docIDs list
     
     Arguments:
         corpus {str} -- corpus from which to get documents from, options are either 'uo_courses' or 'reuters'
@@ -22,5 +24,5 @@ def get_corpus_texts(corpus:str, docIDs: list) -> pd.DataFrame:
     
     Returns:
         pd.DataFrame -- Dataframe containing documents with given docIDs
-    '''
+    """
     return corpora[corpus].loc[docIDs]

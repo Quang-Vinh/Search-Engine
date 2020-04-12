@@ -24,8 +24,8 @@ import textwrap
 from win32api import GetSystemMetrics
 
 # Search engine modules
-from boolean_retreival import retreive_results
-from corpus_access import get_uo_courses
+from boolean_retrieval import BooleanRetrievalModel
+from corpus_access import get_corpus_texts
 from inverted_index import InvertedIndex, load_index
 from spelling_correction import SpellingCorrector
 from vector_space_model import VectorSpaceModel
@@ -38,9 +38,24 @@ class LabelButton(ButtonBehavior, Label):
 class SearchScreen(GridLayout):
 
     # Load index and setup models
-    index = load_index("../indexes/UofO_Courses_index.pkl")
-    spelling_corrector = SpellingCorrector(index.dictionary.words_raw)
-    vsm_model = VectorSpaceModel(index)
+    uo_index = load_index("../indexes/UofO_Courses_index.pkl")
+    uo_spelling_corrector = SpellingCorrector(uo_index.dictionary.words_raw)
+    uo_vsm_model = VectorSpaceModel(uo_index)
+    uo_bool_model = BooleanRetrievalModel(uo_index)
+
+    reuters_index = load_index("../indexes/reuters_index.pkl")
+    reuters_spelling_corrector = SpellingCorrector(reuters_index.dictionary.words_raw)
+    reuters_vsm_model = VectorSpaceModel(reuters_index)
+    reuters_bool_model = BooleanRetrievalModel(reuters_index)
+
+    indexes = {"uo_courses": uo_index, "reuters": reuters_index}
+    spelling_correctors = {
+        "uo_courses": uo_spelling_corrector,
+        "reuters": reuters_spelling_corrector,
+    }
+    vsm_models = {"uo_courses": uo_vsm_model, "reuters": reuters_vsm_model}
+    bool_models = {"uo_courses": uo_bool_model, "reuters": reuters_bool_model}
+    corpus_selected = "uo_courses"
 
     layout_content = ObjectProperty(None)
 
@@ -55,22 +70,29 @@ class SearchScreen(GridLayout):
         """
 
         query = self.ids["search_query_input"].text
+        self.corpus_selected = (
+            "uo_courses" if self.ids["uo_courses"].active else "reuters"
+        )
 
         # Get search results
         if self.ids["vsm"].active:
-            results = self.vsm_model.search(query, include_similarities=True, limit=10)
+            results = self.vsm_models[self.corpus_selected].search(
+                query, include_similarities=True, limit=10
+            )
             docIDs = [docID for docID, _ in results]
             scores = [score for _, score in results]
         elif self.ids["boolean"].active:
-            docIDs = retreive_results(query)
+            docIDs = self.bool_models[self.corpus_selected].retrieve_results(query)
             scores = [1] * len(docIDs)
         else:
             return
-
-        search_results = get_uo_courses(docIDs)
+        print(docIDs)
+        search_results = get_corpus_texts(self.corpus_selected, docIDs)
 
         # Get suggested queries
-        suggested_queries = self.spelling_corrector.check_query(query)
+        suggested_queries = self.spelling_correctors[self.corpus_selected].check_query(
+            query
+        )
 
         # Update search results
         search_results["score"] = scores
@@ -96,10 +118,10 @@ class SearchScreen(GridLayout):
         search_results_grid.add_widget(title)
         search_results_grid.add_widget(score)
 
-        for docID, course in search_results.iterrows():
+        for docID, doc in search_results.iterrows():
             # Add course info
-            description = course["description"]
-            excerpt = description[:100] if len(description) > 100 else description
+            body = doc["body"]
+            excerpt = body[:100] if len(body) > 100 else body
             search_result = LabelButton(
                 text=f"{docID} \n {excerpt}", size_hint=(1, None)
             )
@@ -107,7 +129,7 @@ class SearchScreen(GridLayout):
             search_results_grid.add_widget(search_result)
 
             # Add score
-            score = course["score"]
+            score = doc["score"]
             score_label = Label(text=str(score))
             search_results_grid.add_widget(score_label)
 
@@ -115,18 +137,20 @@ class SearchScreen(GridLayout):
 
     def show_search_result_popup(self, instance) -> None:
         """
-        Open a popup for clicked on search result to show entire search result description
+        Open a popup for clicked on search result to show entire search result body
         """
 
         docID = instance.text.split("\n")[0].strip()
+        if self.corpus_selected == "reuters":
+            docID = int(docID)
 
-        course = get_uo_courses([docID]).iloc[[0]]
-        course_title = course["title"][0]
-        description = course["description"][0]
+        doc = get_corpus_texts(self.corpus_selected, [docID]).iloc[0]
+        title = doc["title"]
+        body = doc["body"]
 
-        label = Label(text=textwrap.fill(description, 50))
+        label = Label(text=textwrap.fill(body, 50))
         search_result_popup = Popup(
-            title=f"{docID} - {course_title}",
+            title=f"{docID} - {title}",
             content=label,
             size_hint=(None, None),
             size=(400, 400),
@@ -154,7 +178,6 @@ class SearchScreen(GridLayout):
         """
         Make new search with suggested query
         """
-
         # Set new query
         suggested_query = re.sub(r"[0-9]*\) ", "", instance.text, 1)
         self.ids["search_query_input"].text = suggested_query
