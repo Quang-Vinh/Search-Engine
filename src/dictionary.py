@@ -9,6 +9,9 @@ from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 
 
+# TODO: Optimize preprocessing
+
+
 def stopword_removal(words: list) -> list:
     """
     Remove stopwords from descriptions
