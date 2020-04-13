@@ -3,7 +3,7 @@
 
 from collections import defaultdict
 from nltk import bigrams
-from sentence_preprocessing import tokenize
+from sentence_preprocessing import stopword_removal, tokenize
 from typing import Dict, List
 
 
@@ -11,7 +11,7 @@ from typing import Dict, List
 
 
 class BigramLanguageModel:
-    """Bigram language model built on given corpus. No preprocessing done other than lower case and remove special characters
+    """Bigram language model built on given corpus. Preprocessing done is lower case, remove special characters and stopword removal
     
     Attributes:
         None
@@ -25,6 +25,7 @@ class BigramLanguageModel:
 
         # Get tokens and bigrams for each document within corpus
         corpus_tokens = [tokenize(doc) for doc in corpus]
+        corpus_tokens = [stopword_removal(doc_tokens) for doc_tokens in corpus_tokens]
         corpus_bigrams = [bigrams(doc_tokens) for doc_tokens in corpus_tokens]
 
         # Calculate bigram freq and probabilities
