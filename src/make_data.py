@@ -115,7 +115,7 @@ if __name__ == "__main__":
 
     # Get predictions
     predicted_topics = [knn.predict(X) for X in X_test]
-    reuters_textsp["topics"].loc[~train_index] = predicted_topics
+    reuters_texts.loc[~train_index, 'topics'] = predicted_topics
     reuters_texts.to_csv(reuters_topics_out_path, index=False)
     t.toc()
 
