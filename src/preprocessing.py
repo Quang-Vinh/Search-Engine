@@ -115,7 +115,6 @@ def preprocess_reuters_file(file_path: str) -> pd.DataFrame:
     texts = [texts[i] for i in range(n_texts) if index_keep[i]]
 
     # Create text data
-
     text_data = [
         (
             text.title.text,
@@ -123,13 +122,18 @@ def preprocess_reuters_file(file_path: str) -> pd.DataFrame:
             text.author.text if text.author != None else None,
             re.sub(r"reuter", "", text.text_body.text, flags=re.I),
         )
-        for text in texts
+        for (text, reuter) in zip(texts, reuters)
     ]
     text_df = pd.DataFrame(text_data, columns=cols)
 
     # Add reuters meta data
     IDs = [int(reuter["newid"]) for reuter in reuters]
     text_df["docID"] = IDs
+
+    # Add reuters topic
+    topics = [reuter.topics.find_all("d") for reuter in reuters]
+    topics = [[t.text for t in topic] for topic in topics]
+    text_df["topics"] = topics
 
     return text_df
 
