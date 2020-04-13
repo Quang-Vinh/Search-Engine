@@ -1,6 +1,7 @@
 # Module 2 - Query Completion Module
 # Purpose: Provide suggestions as a list of possible completions to a query
 
+# TODO: calculate_one_step prob can just be calculated usting P(w_n|w_n-1) and doens't require whole sequence
 
 from bigram_language_model import BigramLanguageModel
 from sentence_preprocessing import tokenize
