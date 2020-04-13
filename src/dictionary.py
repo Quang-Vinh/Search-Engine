@@ -4,6 +4,7 @@
 import pandas as pd
 import re
 from sentence_preprocessing import *
+from pytictoc import TicToc
 
 # TODO: Optimize preprocessing
 
@@ -24,19 +25,13 @@ class Dictionary:
         self.remove_stopword = remove_stopword
         self.stem = stem
         self.normalize = normalize
-
+        
         # Keep raw unprocessed words from corpus
         words_raw_tokens = [tokenize(doc) for doc in corpus]
         self.words_raw = set([word for tokens in words_raw_tokens for word in tokens])
-
-        # Get list of all words from collection
-        doc_tokens = [
-            self._preprocess_document(doc, remove_stopword, stem, normalize)
-            for doc in corpus
-        ]
-
-        # Flatten out list
-        words = [word for doc in doc_tokens for word in doc]
+        
+        # Preprocess the rest of the word tokens
+        words = self._preprocess_tokens(list(self.words_raw), remove_stopword, stem, normalize)
 
         # Remove duplicates
         self.words = set(words)
@@ -72,6 +67,19 @@ class Dictionary:
         """
         words = tokenize(doc)
 
+        if remove_stopword:
+            words = stopword_removal(words)
+
+        if stem:
+            stemmer = PorterStemmer()
+            words = stem_tokens(words, stemmer)
+
+        if normalize:
+            words = [normalize_token(word) for word in words]
+
+        return words
+
+    def _preprocess_tokens(self, words: list, remove_stopword: bool = True, stem: bool = True, normalize: bool = True) -> list:
         if remove_stopword:
             words = stopword_removal(words)
 
