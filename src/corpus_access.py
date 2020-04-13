@@ -7,10 +7,10 @@ import pandas as pd
 
 # Load preprocessed UofO courses dataframe
 uo_courses_corpus = pd.read_csv(
-    "../collections/processed/UofO_Courses_preprocessed.csv", index_col="docID"
+    "../collections/processed/UofO_Courses.csv", index_col="docID"
 )
 reuters_corpus = pd.read_csv(
-    "../collections/processed/reuters_preprocessed.csv", index_col="docID"
+    "../collections/processed/reuters.csv", index_col="docID"
 )
 corpora = {"uo_courses": uo_courses_corpus, "reuters": reuters_corpus}
 
