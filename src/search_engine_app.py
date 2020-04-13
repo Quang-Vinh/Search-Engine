@@ -43,15 +43,20 @@ from pathlib import Path
 
 
 # Relevance feedback stored as a dictionary in form of {'query': (list of non relevant docIDs, list of relevant docIDs)} per corpus
-relevance_feedback = {'uo_courses': defaultdict(lambda: (set(), set())), 'reuters': defaultdict(lambda: (set(), set()))}
+relevance_feedback = {
+    "uo_courses": defaultdict(lambda: (set(), set())),
+    "reuters": defaultdict(lambda: (set(), set())),
+}
 
 
 class LabelButton(ButtonBehavior, Label):
     pass
 
+
 # https://github.com/kivy/kivy/wiki/Scrollable-Label
 class ScrollableLabel(ScrollView):
-    text = StringProperty('')
+    text = StringProperty("")
+
 
 class SearchScreen(GridLayout):
 
@@ -114,8 +119,14 @@ class SearchScreen(GridLayout):
 
         # Get search results
         if self.ids["vsm"].active:
+            relevant_doc_ids = relevance_feedback[self.corpus_selected][query][1]
+            non_relevant_doc_ids = relevance_feedback[self.corpus_selected][query][0]
             results = self.vsm_models[self.corpus_selected].search(
-                query, include_similarities=True, limit=10
+                query,
+                include_similarities=True,
+                limit=10,
+                relevant_doc_ids=relevant_doc_ids,
+                non_relevant_doc_ids=non_relevant_doc_ids,
             )
             docIDs = [docID for docID, _ in results]
             scores = [score for _, score in results]
@@ -152,21 +163,19 @@ class SearchScreen(GridLayout):
         # Add table titles
         title = Label(text="Search Results")
         score = Label(text="Score")
-        relevance = Label(text='Relevance', size_hint_x = None)
+        relevance = Label(text="Relevance", size_hint_x=None)
         search_results_grid.add_widget(title)
         search_results_grid.add_widget(score)
         search_results_grid.add_widget(relevance)
 
         for docID, doc in search_results.iterrows():
             # Add course info
-            title = doc['title']
+            title = doc["title"]
             title = title[:20] if len(title) > 20 else title
             body = doc["body"]
             excerpt = body[:150] if len(body) > 150 else body
-            excerpt = textwrap.fill(excerpt,  75)
-            search_result = LabelButton(
-                text=f"{docID}\n{excerpt}", size_hint=(1, None)
-            )
+            excerpt = textwrap.fill(excerpt, 75)
+            search_result = LabelButton(text=f"{docID}\n{excerpt}", size_hint=(1, None))
             search_result.bind(on_press=self.show_search_result_popup)
             search_results_grid.add_widget(search_result)
 
@@ -176,9 +185,15 @@ class SearchScreen(GridLayout):
             search_results_grid.add_widget(score_label)
 
             # Add relevance buttons
-            btn_grid = GridLayout(cols = 2, size_hint_x = None)
-            yes_btn = CheckBox(group = str(docID), on_press=partial(self.toggle_relevance, docID, True))
-            no_btn = CheckBox(group = str(docID), color =[10,1,1,1], on_press=partial(self.toggle_relevance, docID, False))
+            btn_grid = GridLayout(cols=2, size_hint_x=None)
+            yes_btn = CheckBox(
+                group=str(docID), on_press=partial(self.toggle_relevance, docID, True)
+            )
+            no_btn = CheckBox(
+                group=str(docID),
+                color=[10, 1, 1, 1],
+                on_press=partial(self.toggle_relevance, docID, False),
+            )
             btn_grid.add_widget(yes_btn)
             btn_grid.add_widget(no_btn)
             search_results_grid.add_widget(btn_grid)
@@ -186,25 +201,24 @@ class SearchScreen(GridLayout):
         return
 
     def toggle_relevance(self, docID: str, relevant: bool, instance) -> None:
-        '''Updates in memory relevance feedback data structure 
+        """Updates in memory relevance feedback data structure 
         
         Arguments:
             docID {str} -- docID
             relevant {bool} -- If button was relevant or non relevant
             instance {[type]} -- Checkbox instance
-        '''
+        """
         query = self.ids["search_query_input"].text
 
-        if (relevant and instance.active):
+        if relevant and instance.active:
             relevance_feedback[self.corpus_selected][query][1].add(docID)
             relevance_feedback[self.corpus_selected][query][0].discard(docID)
-        elif (not relevant and instance.active):
+        elif not relevant and instance.active:
             relevance_feedback[self.corpus_selected][query][1].discard(docID)
             relevance_feedback[self.corpus_selected][query][0].add(docID)
-        elif (not instance.active):
+        elif not instance.active:
             relevance_feedback[self.corpus_selected][query][1].discard(docID)
             relevance_feedback[self.corpus_selected][query][0].discard(docID)
-        print(relevance_feedback)
         return
 
     def show_search_result_popup(self, instance) -> None:
@@ -222,12 +236,12 @@ class SearchScreen(GridLayout):
 
         # Popup
         search_result_popup = Popup()
-        search_result_popup.title = f'{docID} - {title}'
-        search_result_popup.title_align = 'center'
+        search_result_popup.title = f"{docID} - {title}"
+        search_result_popup.title_align = "center"
         search_result_popup.size_hint = None, None
         search_result_popup.size = 1400, 800
 
-        label = Label(text = textwrap.fill(body, 170))
+        label = Label(text=textwrap.fill(body, 170))
 
         # label_scroll = ScrollableLabel()
         # label_scroll.text = body
