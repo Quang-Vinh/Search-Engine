@@ -2,20 +2,21 @@ import re
 import pickle
 import dictionary
 import wildcard_management
+import sentence_preprocessing
 
 
 class BooleanRetrievalModel:
-    """
+    '''
     Class with methods needed to perform boolean retreival
     Initiated with an index pickle object.
-    """
-
-    def __init__(self, index):
-        self.inv_ind = index
+    '''
+    
+    def __init__(self, pickle_index):
+        self.inv_ind = pickle_index
 
     def resolve_single_term(self, term, index):
         # returns the docIDs for a single search term
-        term = index.dictionary.preprocess_document(term)
+        term = sentence_preprocessing.tokenize(term)
         if term[0].find("*") >= 0:
             return self.resolve_wildcard_term(term[0], index)
         else:
@@ -26,7 +27,7 @@ class BooleanRetrievalModel:
 
     def resolve_wildcard_term(self, term, index):
         # intersecs all terms in the dictionary matching up with the wildcard
-        matching_words = wildcard_management.get_indexed_words(term)
+        matching_words = wildcard_management.get_indexed_words(term, self.inv_ind)
         results = set()
         for word in matching_words:
             results = results.union(self.resolve_single_term(word, index))
