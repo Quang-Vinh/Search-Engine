@@ -134,7 +134,7 @@ class BigramLanguageModel:
         Returns:
             float -- Term prior probability
         """
-        return self._priors[word]["proba"]
+        return self._priors[word]["proba"] if word in self._priors.keys() else 0
 
     def get_w2(self, w1: str) -> str:
         """Returns all words w2 that match (w1,w2) in bigram model
