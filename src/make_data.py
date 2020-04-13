@@ -3,6 +3,7 @@
 from bigram_language_model import BigramLanguageModel
 from dictionary import Dictionary
 from inverted_index import InvertedIndex
+from kNN_reuters import kNN_reuters
 from preprocessing import preprocess_uo_courses, preprocess_reuters_all
 
 import os.path
@@ -30,6 +31,9 @@ if __name__ == "__main__":
     reuters_index_path = os.path.join(file_path, "../models/indexes/reuters_index.pkl")
     reuters_bigram_model_path = os.path.join(
         file_path, "../models/bigram_language_models/reuters_bigram_model.pkl"
+    )
+    reuters_topics_out_path = os.path.join(
+        file_path, "../collections/processed/reuters_with_topics.csv"
     )
 
     # Create directories for models
@@ -88,6 +92,31 @@ if __name__ == "__main__":
     print("Create bigram language model Reuters collections")
     reuter_bigram_model = BigramLanguageModel(reuters_texts["body"].to_list())
     pickle.dump(reuter_bigram_model, open(reuters_bigram_model_path, "wb"))
+    t.toc()
+
+    # kNN predict topics
+    t.tic()
+    print("\nPredict unknown topics for Reuters collections")
+
+    # Split train and testing based on unknown topics
+    train_index = reuters_texts["topics"].apply(len) > 0
+    X = reuters_texts["body"]
+    X_train = X.loc[train_index]
+    X_test = X.loc[-train_index].reset_index(drop=True)
+    Y = reuters_texts["topics"]
+    Y_train = Y.loc[train_index]
+    Y_test = Y.loc[-train_index].reset_index(drop=True)
+    docIDs = reuters_texts["docID"]
+    docIDs_train = docIDs.loc[train_index].reset_index(drop=True)
+
+    # Use k=5, common
+    knn = kNN_reuters(5)
+    knn.fit(X_train, Y_train, docIDs_train)
+
+    # Get predictions
+    predicted_topics = [knn.predict(X) for X in X_test]
+    reuters_textsp["topics"].loc[~train_index] = predicted_topics
+    reuters_texts.to_csv(reuters_topics_out_path, index=False)
     t.toc()
 
     print("\nCompleted preprocessing total time:")
