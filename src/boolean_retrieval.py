@@ -6,11 +6,11 @@ import sentence_preprocessing
 
 
 class BooleanRetrievalModel:
-    '''
+    """
     Class with methods needed to perform boolean retreival
     Initiated with an index pickle object.
-    '''
-    
+    """
+
     def __init__(self, pickle_index):
         self.inv_ind = pickle_index
 

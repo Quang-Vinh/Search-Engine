@@ -121,7 +121,7 @@ def preprocess_reuters_file(file_path: str) -> pd.DataFrame:
             text.title.text,
             text.type.text if text.type != None else None,
             text.author.text if text.author != None else None,
-            re.sub(r'reuter', '', text.text_body.text, flags=re.I)
+            re.sub(r"reuter", "", text.text_body.text, flags=re.I),
         )
         for text in texts
     ]

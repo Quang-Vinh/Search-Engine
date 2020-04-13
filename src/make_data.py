@@ -33,8 +33,12 @@ if __name__ == "__main__":
     )
 
     # Create directories for models
-    Path(os.path.join(file_path, '../models/bigram_language_models')).mkdir(parents=True, exist_ok=True)
-    Path(os.path.join(file_path, '../models/indexes/')).mkdir(parents=True, exist_ok=True)
+    Path(os.path.join(file_path, "../models/bigram_language_models")).mkdir(
+        parents=True, exist_ok=True
+    )
+    Path(os.path.join(file_path, "../models/indexes/")).mkdir(
+        parents=True, exist_ok=True
+    )
 
     tictoc = TicToc()
     t = TicToc()

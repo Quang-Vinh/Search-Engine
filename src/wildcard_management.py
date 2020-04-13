@@ -31,9 +31,11 @@ def get_wildcarded_bigrams(term):
         endl = False
         endr = False
         if term_split[i]:
-            if i == 0 or (i-1 == 0 and not term_split[0]):
+            if i == 0 or (i - 1 == 0 and not term_split[0]):
                 endl = True
-            if i == len(term_split) - 1 or (i - 1 == len(term_split) - 1 and not term_split[-1]):
+            if i == len(term_split) - 1 or (
+                i - 1 == len(term_split) - 1 and not term_split[-1]
+            ):
                 endr = True
             term_bigrams = term_bigrams.union(get_bigrams(term_split[i], endl, endr))
     return term_bigrams

@@ -2,7 +2,7 @@
 # Purpose: Implementing the Vector Space Model for retrieval
 
 # TODO: use matrix operations to more efficiently calculate similariies between query and document
-# TODO: use numpy for vector representations 
+# TODO: use numpy for vector representations
 
 import numpy as np
 import pandas as pd
@@ -25,14 +25,14 @@ class VectorSpaceModel:
         return
 
     def to_vector(self, query: str) -> List[Tuple[str, float]]:
-        '''Converts query into vector with all weights 1 for use in search
+        """Converts query into vector with all weights 1 for use in search
         
         Arguments:
             query {str} -- Query string
         
         Returns:
             List[Tuple[str, float]] -- Sparse vector 
-        '''
+        """
         # Preprocess query string
         query_tokens = set(self.dictionary.preprocess_document(query))
 
@@ -54,7 +54,12 @@ class VectorSpaceModel:
         Returns a list of tuples (docID, similarity)
         """
         query_vector = self.to_vector(query)
-        search_results = self.vector_search(query_vector, similarity=similarity, limit=limit, include_similarities=include_similarities)
+        search_results = self.vector_search(
+            query_vector,
+            similarity=similarity,
+            limit=limit,
+            include_similarities=include_similarities,
+        )
         return search_results
 
     def vector_search(

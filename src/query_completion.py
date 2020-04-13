@@ -16,7 +16,9 @@ class QueryCompleter:
         self.bigram_language_model = bigram_language_model
         return
 
-    def complete_query(self, query: str, limit: int = 5, include_score: bool = False) -> List[str]:
+    def complete_query(
+        self, query: str, limit: int = 5, include_score: bool = False
+    ) -> List[str]:
         """Finds suggestions for completing the query 
         
         Arguments:

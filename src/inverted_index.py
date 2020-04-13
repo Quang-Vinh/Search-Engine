@@ -112,16 +112,16 @@ class InvertedIndex:
         return postings
 
     def get_docID_vector(self, docID) -> np.array:
-        '''Returns the vector form of document where each dimension is a term (sorted alphabetically) and contains value TF-IDF
+        """Returns the vector form of document where each dimension is a term (sorted alphabetically) and contains value TF-IDF
         
         Arguments:
             docID {[type]} -- document id
         
         Returns:
             np.array -- Vector representation of document using TF-IDF
-        '''
+        """
         terms = list(self.get_terms())
         terms.sort()
         vector = [self.get_tf_idf(term, docID) for term in terms]
         vector = np.array([val if (val != None) else 0 for val in vector])
-        return vector 
+        return vector
