@@ -5,21 +5,21 @@ from dictionary import Dictionary
 from inverted_index import InvertedIndex
 from preprocessing import preprocess_uo_courses, preprocess_reuters_all
 
+import os.path
 import pickle
 from pytictoc import TicToc
 
 
 if __name__ == "__main__":
-    uo_courses_file_path = "../collections/raw/UofO_Courses.html"
-    uo_courses_out_path = "../collections/processed/UofO_Courses_preprocessed.csv"
-    uo_courses_index_path = "../models/indexes/UofO_courses_index.pkl"
-    uo_bigram_model_path = "../models/bigram_language_models/UofO_bigram_model.pkl"
-    reuters_folder_path = "../collections/raw/reuters21578"
-    reuters_out_path = "../collections/processed/reuters_preprocessed.csv"
-    reuters_index_path = "../models/indexes/reuters_index.pkl"
-    reuters_bigram_model_path = (
-        "../models/bigram_language_models/reuters_bigram_model.pkl"
-    )
+    file_path = os.path.abspath(os.path.dirname(__file__))
+    uo_courses_file_path = os.path.join(file_path, "../collections/raw/UofO_Courses.html")
+    uo_courses_out_path = os.path.join(file_path, "../collections/processed/UofO_Courses_preprocessed.csv")
+    uo_courses_index_path = os.path.join(file_path, "../models/indexes/UofO_courses_index.pkl")
+    uo_bigram_model_path = os.path.join(file_path, "../models/bigram_language_models/UofO_bigram_model.pkl")
+    reuters_folder_path = os.path.join(file_path, "../collections/raw/reuters21578")
+    reuters_out_path = os.path.join(file_path, "../collections/processed/reuters_preprocessed.csv")
+    reuters_index_path = os.path.join(file_path, "../models/indexes/reuters_index.pkl")
+    reuters_bigram_model_path = os.path.join(file_path, "../models/bigram_language_models/reuters_bigram_model.pkl")
 
     tictoc = TicToc()
     t = TicToc()
