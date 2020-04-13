@@ -115,12 +115,13 @@ def preprocess_reuters_file(file_path: str) -> pd.DataFrame:
     texts = [texts[i] for i in range(n_texts) if index_keep[i]]
 
     # Create text data
+
     text_data = [
         (
             text.title.text,
             text.type.text if text.type != None else None,
             text.author.text if text.author != None else None,
-            text.text_body.text,
+            re.sub(r'reuter', '', text.text_body.text, flags=re.I)
         )
         for text in texts
     ]
