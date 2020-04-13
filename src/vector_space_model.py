@@ -52,6 +52,7 @@ class VectorSpaceModel:
         include_similarities: bool = False,
         relevant_doc_ids: set = {},
         non_relevant_doc_ids: set = {},
+        reverse: bool = True,
     ) -> list:
         """
         Given query string searches through documents to find best matches and returns docIDs with best match, but will exclude documents with similarity of 0.
@@ -72,6 +73,7 @@ class VectorSpaceModel:
             similarity=similarity,
             limit=limit,
             include_similarities=include_similarities,
+            reverse=reverse,
         )
         return search_results
 
@@ -81,10 +83,11 @@ class VectorSpaceModel:
         similarity: str = "inner-product",
         limit: int = 10,
         include_similarities: bool = False,
+        reverse: bool = True,
     ) -> list:
         """
-        Given query vector weight weights searches through documents to find best matches and returns docIDs with best match, but will exclude documents with similarity of 0.
-        Query weights for each term are set to 1
+        Given query vector weight in form of list of tuples (word, weight), searches through documents to find
+        best matches and returns docIDs with best match, but will exclude documents with similarity of 0.
         Uses either "inner-product" or "cosine" for similarity 
         Returns a list of tuples (docID, similarity)
         """
@@ -100,7 +103,7 @@ class VectorSpaceModel:
 
         # Sort docIDs in order of decreasing similarity values
         query_results = list(query_results.items())
-        query_results.sort(key=lambda pair: pair[1], reverse=True)
+        query_results.sort(key=lambda pair: pair[1], reverse=reverse)
 
         # Remove documents with 0 similarity
         query_results = [sim for sim in query_results if sim[1] != 0]
@@ -136,6 +139,7 @@ class VectorSpaceModel:
             for docID in docIDs:
                 doc_weight = self.index.get_tf_idf(word, docID)
                 similarities[docID] += word_weight * doc_weight
+
         return similarities
 
     def _cosine_sim(self, query_vector: List[Tuple[str, float]]) -> float:
