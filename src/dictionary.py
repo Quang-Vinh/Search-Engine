@@ -25,13 +25,15 @@ class Dictionary:
         self.remove_stopword = remove_stopword
         self.stem = stem
         self.normalize = normalize
-        
+
         # Keep raw unprocessed words from corpus
         words_raw_tokens = [tokenize(doc) for doc in corpus]
         self.words_raw = set([word for tokens in words_raw_tokens for word in tokens])
-        
+
         # Preprocess the rest of the word tokens
-        words = self._preprocess_tokens(list(self.words_raw), remove_stopword, stem, normalize)
+        words = self._preprocess_tokens(
+            list(self.words_raw), remove_stopword, stem, normalize
+        )
 
         # Remove duplicates
         self.words = set(words)
@@ -79,7 +81,13 @@ class Dictionary:
 
         return words
 
-    def _preprocess_tokens(self, words: list, remove_stopword: bool = True, stem: bool = True, normalize: bool = True) -> list:
+    def _preprocess_tokens(
+        self,
+        words: list,
+        remove_stopword: bool = True,
+        stem: bool = True,
+        normalize: bool = True,
+    ) -> list:
         if remove_stopword:
             words = stopword_removal(words)
 
