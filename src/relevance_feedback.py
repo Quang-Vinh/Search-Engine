@@ -21,6 +21,16 @@ class Rocchio():
         return
 
     def update_query_vector(self, query_vector: List[Tuple[str, float]], relevant_doc_ids: list, non_relevant_doc_ids: list) -> List[Tuple[str, float]]:
+        '''Updates query vector using Rocchio algorithm based on relevant documents
+        
+        Arguments:
+            query_vector {List[Tuple[str, float]]} -- Sparse query vector
+            relevant_doc_ids {list} -- Relevant document ids
+            non_relevant_doc_ids {list} -- Non relevant document ids
+        
+        Returns:
+            List[Tuple[str, float]] -- Updated sparse query vector
+        '''
 
         nr_len = len(non_relevant_doc_ids)
         r_len = len(relevant_doc_ids)
@@ -42,6 +52,11 @@ class Rocchio():
             updated_query_vector = query_vector + self.beta * (1 / r_len) * relevant_vector
         if nr_len > 0:
             updated_query_vector = updated_query_vector - self.gamma * (1 / nr_len) * non_relevant_vector
+
+        # Convert back to sparse vector
+        terms = list(self.index.get_terms()) 
+        terms.sort()
+        updated_query_vector = [(term, weight) for (term, weight) in zip(terms, updated_query_vector) if weight > 0]
 
         return updated_query_vector
 
