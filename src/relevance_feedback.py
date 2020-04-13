@@ -28,8 +28,8 @@ class Rocchio:
     def update_query_vector(
         self,
         query_vector: List[Tuple[str, float]],
-        relevant_doc_ids: list,
-        non_relevant_doc_ids: list,
+        relevant_doc_ids: set,
+        non_relevant_doc_ids: set,
     ) -> List[Tuple[str, float]]:
         """Updates query vector using Rocchio algorithm based on relevant documents
         
@@ -41,7 +41,8 @@ class Rocchio:
         Returns:
             List[Tuple[str, float]] -- Updated sparse query vector
         """
-
+        non_relevant_doc_ids = list(non_relevant_doc_ids)
+        relevant_doc_ids = list(relevant_doc_ids)
         nr_len = len(non_relevant_doc_ids)
         r_len = len(relevant_doc_ids)
 

@@ -4,6 +4,9 @@
 # TODO: use matrix operations to more efficiently calculate similariies between query and document
 # TODO: use numpy for vector representations
 
+
+from relevance_feedback import Rocchio
+
 import numpy as np
 import pandas as pd
 from dictionary import Dictionary
@@ -14,7 +17,7 @@ from typing import List, Tuple
 class VectorSpaceModel:
     """
     Vector space model for retrieval for given index
-    Currently does not accept user defined weights for query terms
+    Also implements relevance feedback using Rocchio algorithm if relevant ids are provided
     """
 
     def __init__(self, index: InvertedIndex):
@@ -22,6 +25,7 @@ class VectorSpaceModel:
         self.index = index
         self.dictionary = index.dictionary
         self.docIDs = self.index.docIDs
+        self.rocchio = Rocchio(index)
         return
 
     def to_vector(self, query: str) -> List[Tuple[str, float]]:
@@ -46,6 +50,8 @@ class VectorSpaceModel:
         similarity: str = "inner-product",
         limit: int = 10,
         include_similarities: bool = False,
+        relevant_doc_ids: set = {},
+        non_relevant_doc_ids: set = {},
     ) -> list:
         """
         Given query string searches through documents to find best matches and returns docIDs with best match, but will exclude documents with similarity of 0.
@@ -54,6 +60,13 @@ class VectorSpaceModel:
         Returns a list of tuples (docID, similarity)
         """
         query_vector = self.to_vector(query)
+
+        # Update using rocchio algorithm
+        if len(relevant_doc_ids) > 0 or len(non_relevant_doc_ids) > 0:
+            query_vector = self.rocchio.update_query_vector(
+                query_vector, relevant_doc_ids, non_relevant_doc_ids
+            )
+
         search_results = self.vector_search(
             query_vector,
             similarity=similarity,
