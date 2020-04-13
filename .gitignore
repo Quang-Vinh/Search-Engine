@@ -1,8 +1,8 @@
 # Taken from https://github.com/github/gitignore/blob/master/Python.gitignore
 
 # Ignore models
-models/**/*.pkl
-
+models/bigram_language_models
+models/indexes
 
 # vs-code
 .vscode

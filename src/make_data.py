@@ -6,6 +6,7 @@ from inverted_index import InvertedIndex
 from preprocessing import preprocess_uo_courses, preprocess_reuters_all
 
 import os.path
+from pathlib import Path
 import pickle
 from pytictoc import TicToc
 
@@ -30,6 +31,10 @@ if __name__ == "__main__":
     reuters_bigram_model_path = os.path.join(
         file_path, "../models/bigram_language_models/reuters_bigram_model.pkl"
     )
+
+    # Create directories for models
+    Path(os.path.join(file_path, '../models/bigram_language_models')).mkdir(parents=True, exist_ok=True)
+    Path(os.path.join(file_path, '../models/indexes/')).mkdir(parents=True, exist_ok=True)
 
     tictoc = TicToc()
     t = TicToc()
