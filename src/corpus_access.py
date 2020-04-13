@@ -2,15 +2,19 @@
 # Purpose: Access documents from the corpus
 
 
+import os.path
 import pandas as pd
 
 
-# Load preprocessed UofO courses dataframe
+# Load preprocessed corpus dataframes
+file_path = os.path.abspath(os.path.dirname(__file__))
+
 uo_courses_corpus = pd.read_csv(
-    "../collections/processed/UofO_Courses.csv", index_col="docID"
+    os.path.join(file_path, "../collections/processed/UofO_Courses.csv"),
+    index_col="docID",
 )
 reuters_corpus = pd.read_csv(
-    "../collections/processed/reuters.csv", index_col="docID"
+    os.path.join(file_path, "../collections/processed/reuters.csv"), index_col="docID"
 )
 corpora = {"uo_courses": uo_courses_corpus, "reuters": reuters_corpus}
 

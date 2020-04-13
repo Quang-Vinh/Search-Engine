@@ -12,14 +12,24 @@ from pytictoc import TicToc
 
 if __name__ == "__main__":
     file_path = os.path.abspath(os.path.dirname(__file__))
-    uo_courses_file_path = os.path.join(file_path, "../collections/raw/UofO_Courses.html")
-    uo_courses_out_path = os.path.join(file_path, "../collections/processed/UofO_Courses.csv")
-    uo_courses_index_path = os.path.join(file_path, "../models/indexes/UofO_courses_index.pkl")
-    uo_bigram_model_path = os.path.join(file_path, "../models/bigram_language_models/UofO_bigram_model.pkl")
+    uo_courses_file_path = os.path.join(
+        file_path, "../collections/raw/UofO_Courses.html"
+    )
+    uo_courses_out_path = os.path.join(
+        file_path, "../collections/processed/UofO_Courses.csv"
+    )
+    uo_courses_index_path = os.path.join(
+        file_path, "../models/indexes/UofO_courses_index.pkl"
+    )
+    uo_bigram_model_path = os.path.join(
+        file_path, "../models/bigram_language_models/UofO_bigram_model.pkl"
+    )
     reuters_folder_path = os.path.join(file_path, "../collections/raw/reuters21578")
     reuters_out_path = os.path.join(file_path, "../collections/processed/reuters.csv")
     reuters_index_path = os.path.join(file_path, "../models/indexes/reuters_index.pkl")
-    reuters_bigram_model_path = os.path.join(file_path, "../models/bigram_language_models/reuters_bigram_model.pkl")
+    reuters_bigram_model_path = os.path.join(
+        file_path, "../models/bigram_language_models/reuters_bigram_model.pkl"
+    )
 
     tictoc = TicToc()
     t = TicToc()

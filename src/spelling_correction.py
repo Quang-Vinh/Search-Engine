@@ -4,6 +4,7 @@
 
 import itertools
 import numpy as np
+import os.path
 import pandas as pd
 import re
 
@@ -13,7 +14,10 @@ import re
 
 # Matrix for weighted edit distance. Defined as the 1 + (1 / (substitution error + 1))
 # Cost of subbing letter1 for letter2 is given by sub_costs[letter2][letter1]
-sub_costs_matrix = pd.read_csv("../data/sub_errors.csv", index_col="X")
+file_path = os.path.abspath(os.path.dirname(__file__))
+sub_costs_matrix = pd.read_csv(
+    os.path.join(file_path, "../data/sub_errors.csv"), index_col="X"
+)
 sub_costs_matrix = 1 + (1 / (sub_costs_matrix + 1))
 
 
