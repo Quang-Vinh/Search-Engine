@@ -28,6 +28,9 @@ class QueryCompleter:
         Returns:
             List[str] -- List of suggested queries in form of (sentence, probability)
         """
+        if query == '':
+            return []
+
         query_tokens = tokenize(query)
 
         suggestions = self.calculate_one_step_prob(query_tokens, limit=limit)
@@ -65,7 +68,7 @@ class QueryCompleter:
                 sent_tokens + [next_word],
                 self.bigram_language_model.calculate_seq_proba(
                     sent_tokens + [next_word]
-                ),
+                )
             )
             for next_word in next_words
         ]
