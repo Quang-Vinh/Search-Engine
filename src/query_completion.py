@@ -16,7 +16,7 @@ class QueryCompleter:
         self.bigram_language_model = bigram_language_model
         return
 
-    def complete_query(self, query: str, limit: int = 5) -> List[str]:
+    def complete_query(self, query: str, limit: int = 5, include_score: bool = False) -> List[str]:
         """Finds suggestions for completing the query 
         
         Arguments:
@@ -37,6 +37,9 @@ class QueryCompleter:
         suggestions = [
             (" ".join(sent_tokens), proba) for (sent_tokens, proba) in suggestions
         ]
+
+        if not include_score:
+            suggestions = [query for (query, _) in suggestions]
 
         return suggestions
 
