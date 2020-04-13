@@ -109,7 +109,9 @@ class VectorSpaceModel:
         query_results = [sim for sim in query_results if sim[1] != 0]
 
         # Limit search results by amount
-        if limit < len(query_results):
+        if limit == -1:
+            pass
+        elif limit < len(query_results):
             query_results = query_results[:limit]
 
         # If don't include similarity
