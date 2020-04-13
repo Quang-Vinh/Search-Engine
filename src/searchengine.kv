@@ -1,6 +1,12 @@
 #:kivy 1.11.1
 
 <SearchScreen>
+    # canvas.before:
+    #     Color:
+    #         rgba: 1, 1, 1, 1
+    #     Rectangle:
+    #         pos: self.pos
+    #         size: self.size
 
     cols: 1
     size: root.width, root.height
@@ -17,6 +23,43 @@
             size_hint_x: '0.5dp'
             orientation: 'vertical'
 
+            TextInput:
+                id: search_query_input
+                size_hint_y: '0.25dp'
+                hint_text: 'Search query'
+                on_text: root.show_query_completions(self.text)
+
+            Button:
+                text: 'Search'
+                size_hint_y: '0.25dp'
+                on_press: root.search()
+
+            BoxLayout:
+                orientation: 'horizontal'
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'Query completions'
+                        size_hint_y: '0.25dp'
+                    ScrollView:
+                        size: self.size 
+                        GridLayout: 
+                            id: query_completions_grid
+                            size_hint_y: None
+                            cols: 1
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'Suggested queries'
+                        size_hint_y: '0.25dp'
+                    ScrollView:
+                        size: self.size
+                        GridLayout:
+                            id: suggested_queries_grid
+                            size_hint_y: None
+                            cols: 1
+                            # padding: 50
+                            # spacing: 0, 50
 
             BoxLayout:
                 orientation: 'horizontal'
@@ -37,6 +80,7 @@
                                 group: 'model'
                                 id: vsm
                                 active: True
+                                on_press: root.toggle_search_model()
                         BoxLayout:
                             orientation: 'vertical'
                             Label:
@@ -44,6 +88,7 @@
                             CheckBox:
                                 group: 'model'
                                 id: boolean
+                                on_press: root.toggle_search_model()
 
                 BoxLayout:
                     orientation: 'vertical'            
@@ -61,6 +106,7 @@
                                 group: 'collection'
                                 id: uo_courses
                                 active: True
+                                on_press: root.toggle_corpus()
                         BoxLayout:
                             orientation: 'vertical'
                             Label:
@@ -68,29 +114,7 @@
                             CheckBox:
                                 group: 'collection'
                                 id: reuters
-                            
-            TextInput:
-                id: search_query_input
-                size_hint_y: '0.25dp'
-                hint_text: 'Search query'
-
-            Button:
-                text: 'Search'
-                size_hint_y: '0.25dp'
-                on_press: root.search()
-        
-            Label:
-                text: 'Suggested queries'
-                size_hint_y: '0.25dp'
-
-            ScrollView:
-                size: self.size
-                GridLayout:
-                    id: suggested_queries_grid
-                    size_hint_y: None
-                    cols: 2
-                    # padding: 50
-                    # spacing: 0, 50
+                                on_press: root.toggle_corpus()
 
 
         ScrollView:

@@ -25,11 +25,16 @@ import textwrap
 from win32api import GetSystemMetrics
 
 # Search engine modules
+from bigram_language_model import BigramLanguageModel
 from boolean_retrieval import BooleanRetrievalModel
 from corpus_access import get_corpus_texts
 from inverted_index import InvertedIndex
+from query_completion import QueryCompleter
 from spelling_correction import SpellingCorrector
 from vector_space_model import VectorSpaceModel
+
+# Other
+from pathlib import Path
 
 
 class LabelButton(ButtonBehavior, Label):
@@ -39,15 +44,28 @@ class LabelButton(ButtonBehavior, Label):
 class SearchScreen(GridLayout):
 
     # Load index and setup models
-    uo_index = pickle.load(open("../models/indexes/UofO_Courses_index.pkl", "rb"))
+    uo_index_path = Path(__file__).parent / "../models/indexes/UofO_Courses_index.pkl"
+    uo_index = pickle.load(uo_index_path.open("rb"))
     uo_spelling_corrector = SpellingCorrector(uo_index.dictionary.words_raw)
     uo_vsm_model = VectorSpaceModel(uo_index)
     uo_bool_model = BooleanRetrievalModel(uo_index)
+    uo_bigram_path = (
+        Path(__file__).parent / "../models/bigram_language_models/UofO_bigram_model.pkl"
+    )
+    uo_bigram_model = pickle.load(uo_bigram_path.open("rb"))
+    uo_query_completer = QueryCompleter(uo_bigram_model)
 
-    reuters_index = pickle.load(open("../models/indexes/reuters_index.pkl", "rb"))
+    reuters_index_path = Path(__file__).parent / "../models/indexes/reuters_index.pkl"
+    reuters_index = pickle.load(reuters_index_path.open("rb"))
     reuters_spelling_corrector = SpellingCorrector(reuters_index.dictionary.words_raw)
     reuters_vsm_model = VectorSpaceModel(reuters_index)
     reuters_bool_model = BooleanRetrievalModel(reuters_index)
+    reuters_bigram_path = (
+        Path(__file__).parent
+        / "../models/bigram_language_models/reuters_bigram_model.pkl"
+    )
+    reuters_bigram_model = pickle.load(reuters_bigram_path.open("rb"))
+    reuters_query_completer = QueryCompleter(reuters_bigram_model)
 
     indexes = {"uo_courses": uo_index, "reuters": reuters_index}
     spelling_correctors = {
@@ -56,6 +74,13 @@ class SearchScreen(GridLayout):
     }
     vsm_models = {"uo_courses": uo_vsm_model, "reuters": reuters_vsm_model}
     bool_models = {"uo_courses": uo_bool_model, "reuters": reuters_bool_model}
+    query_completers = {
+        "uo_courses": uo_query_completer,
+        "reuters": reuters_query_completer,
+    }
+
+    # Flags for options when searching
+    model_selected = "vsm"
     corpus_selected = "uo_courses"
 
     layout_content = ObjectProperty(None)
@@ -87,12 +112,11 @@ class SearchScreen(GridLayout):
             scores = [1] * len(docIDs)
         else:
             return
-        print(docIDs)
         search_results = get_corpus_texts(self.corpus_selected, docIDs)
 
         # Get suggested queries
         suggested_queries = self.spelling_correctors[self.corpus_selected].check_query(
-            query
+            query, limit=5
         )
 
         # Update search results
@@ -169,11 +193,12 @@ class SearchScreen(GridLayout):
         # Clear previous suggested queries
         suggested_queries_grid.clear_widgets()
 
-        # Add for each each suggestion
+        # Add each suggestion
         for i in range(0, len(suggested_queries)):
             label = LabelButton(text=f"{i+1}) {suggested_queries[i]}")
             label.bind(on_press=self.suggested_query_search)
             suggested_queries_grid.add_widget(label)
+        return
 
     def suggested_query_search(self, instance) -> None:
         """
@@ -185,7 +210,55 @@ class SearchScreen(GridLayout):
 
         # Search
         self.search()
+        return
 
+    def show_query_completions(self, query: str) -> None:
+        """Predict completed queries for given query and output them to the UI 
+        
+        Arguments:
+            query {str} -- Query to predict completed queries from
+        """
+        query_completions_grid = self.ids["query_completions_grid"]
+
+        # Get completed queries given corpus
+        completed_queries = self.query_completers[self.corpus_selected].complete_query(
+            query
+        )
+
+        # Clear previous completed queries
+        query_completions_grid.clear_widgets()
+
+        # Add each completed query
+        for (i, query) in enumerate(completed_queries):
+            label = LabelButton(text=f"{i+1}) {query}")
+            label.bind(on_press=self.complete_query_search)
+            query_completions_grid.add_widget(label)
+        return
+
+    def complete_query_search(self, instance) -> None:
+        """Sets current query in search text input to new query 
+        
+        Arguments:
+            query {str} -- New query
+        """
+        completed_query = re.sub(r"[0-9]*\) ", "", instance.text, 1)
+        print(completed_query)
+        self.ids["search_query_input"].text = completed_query
+        self.search()
+        return
+
+    def toggle_search_model(self) -> None:
+        """Toggles selected search model
+        """
+        self.model_selected = "vsm" if self.ids["vsm"].active else "boolean"
+        return
+
+    def toggle_corpus(self) -> None:
+        """Toggles selected corpus
+        """
+        self.corpus_selected = (
+            "uo_courses" if self.ids["uo_courses"].active else "reuters"
+        )
         return
 
 
@@ -195,9 +268,7 @@ class SearchEngineApp(App):
 
 
 if __name__ == "__main__":
-
     # Set window maximized
-    Config.set("graphics", "width", GetSystemMetrics(0))
-    Config.set("graphics", "height", GetSystemMetrics(1) - 100)
+    Config.set("graphics", "window_state", "maximized")
 
     SearchEngineApp().run()
