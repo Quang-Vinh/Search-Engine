@@ -73,6 +73,7 @@ def get_most_similar_synsets(term_1, term_2):
     term_1_syns = wordnet.synsets(term_1)
     term_2_syns = wordnet.synsets(term_2)
     max_similarity = 0
+    best_pair = None
     
     for syn1 in term_1_syns:
         for syn2 in term_2_syns:
