@@ -89,6 +89,12 @@ class VectorSpaceModel:
         Uses either "inner-product" or "cosine" for similarity 
         Returns a list of tuples (docID, similarity)
         """
+        # Preprocess using dictionary preprocessing
+        query_tokens = [word for (word, _) in query_vector]
+        query_tokens = self.dictionary._preprocess_tokens(query_tokens)
+        for (i, word) in enumerate(query_tokens):
+            query_vector[i] = (word, query_vector[i][1])
+
         # Update using rocchio algorithm
         if len(relevant_doc_ids) > 0 or len(non_relevant_doc_ids) > 0:
             query_vector = self.rocchio.update_query_vector(
@@ -98,7 +104,7 @@ class VectorSpaceModel:
         if similarity not in ["inner-product", "cosine"]:
             print("Similarity not defined")
             return None
-
+            
         # Calculate similarity for all documents
         if similarity == "inner-product":
             query_results = self._inner_product(query_vector)
