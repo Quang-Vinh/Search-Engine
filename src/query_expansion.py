@@ -12,16 +12,17 @@ def expand_query(user_query, model):
     to get it back to a form usable by the retreival methods youill need to use: inter_model_2_boolean() or inter_model_2_vsm()
     '''
     query = get_inter_model(user_query)
+    use_single = False
     
     if len(query) > 1:
-        expanded_query = expand_term_multiple(query, similarity_threshold=0)
-    else:
+        query = expand_term_multiple(query, similarity_threshold=0)
+    if len(query) <= 1 or use_single:
         print('todo')
     
     if model == "boolean":
-        return inter_model_2_boolean(expanded_query, user_query)
+        return inter_model_2_boolean(query, user_query)
     elif model == "vsm":
-        return inter_model_2_vsm(expanded_query)
+        return inter_model_2_vsm(query)
 
 def expand_term(term, similarity_threshold=0.5, include_hypernyms=False):
     '''
@@ -121,3 +122,4 @@ def inter_model_2_vsm(query):
                 expanded_query.append(j)
     return expanded_query
     
+print(expand_query('hello', 'boolean'))
