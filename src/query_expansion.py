@@ -16,7 +16,7 @@ def expand_query(user_query, model):
     
     if len(query) > 1:
         query = expand_term_multiple(query, similarity_threshold=0)
-    else:
+    elif len(query) == 1:
         query = expand_term(query)
     
     if model == "boolean":
