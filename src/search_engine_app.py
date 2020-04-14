@@ -38,6 +38,7 @@ from inverted_index import InvertedIndex
 from query_completion import QueryCompleter
 from spelling_correction import SpellingCorrector
 from vector_space_model import VectorSpaceModel
+from query_expansion import expand_query
 
 # Other
 from pathlib import Path
@@ -127,12 +128,22 @@ class SearchScreen(GridLayout):
         Onclick for button search for given search query
         """
         query = self.ids["search_query_input"].text
+        
+        query_expansion_popup = Popup()
+        query_expansion_popup.title = "e  x  p  a  n  d"
+        query_expansion_popup.title_align = "center"
+        query_expansion_popup.size_hint = None, None
+        query_expansion_popup.size = 200, 200
+        search_result_popup.add_widget(label)
+        
         self.corpus_selected = (
             "uo_courses" if self.ids["uo_courses"].active else "reuters"
         )
 
         # Get search results
         if self.ids["vsm"].active:
+            expanded_query = expand_query(query, 'vsm')
+            query_expansion_popup.open()
             relevant_doc_ids = relevance_feedback[self.corpus_selected][query][1]
             non_relevant_doc_ids = relevance_feedback[self.corpus_selected][query][0]
             results = self.vsm_models[self.corpus_selected].search(
@@ -145,6 +156,8 @@ class SearchScreen(GridLayout):
             docIDs = [docID for docID, _ in results]
             scores = [score for _, score in results]
         elif self.ids["boolean"].active:
+            expanded_query = expand_query(query, 'boolean')
+            query_expansion_popup.open()
             docIDs = self.bool_models[self.corpus_selected].retrieve_results(query)
             scores = [1] * len(docIDs)
         else:
