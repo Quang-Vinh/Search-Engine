@@ -55,7 +55,7 @@ def expand_term_multiple(query, similarity_threshold=0.5, include_hypernyms=Fals
             for syn in term_a_synonyms:
                 if not syn in [x[0] for x in term_combo[0][1]] and not syn in [x[0] for x in query]:
                     term_combo[0][1].append((syn, ab_similarity))
-            for syn in term_a_synonyms:
+            for syn in term_b_synonyms:
                 if not syn in [x[0] for x in term_combo[1][1]] and not syn in [x[0] for x in query]:
                     term_combo[1][1].append((syn, ab_similarity))
     return query
