@@ -62,17 +62,13 @@ class VectorSpaceModel:
         """
         query_vector = self.to_vector(query)
 
-        # Update using rocchio algorithm
-        if len(relevant_doc_ids) > 0 or len(non_relevant_doc_ids) > 0:
-            query_vector = self.rocchio.update_query_vector(
-                query_vector, relevant_doc_ids, non_relevant_doc_ids
-            )
-
         search_results = self.vector_search(
             query_vector,
             similarity=similarity,
             limit=limit,
             include_similarities=include_similarities,
+            relevant_doc_ids=relevant_doc_ids,
+            non_relevant_doc_ids=non_relevant_doc_ids,
             reverse=reverse,
         )
         return search_results
@@ -83,6 +79,8 @@ class VectorSpaceModel:
         similarity: str = "inner-product",
         limit: int = 10,
         include_similarities: bool = False,
+        relevant_doc_ids: set = {},
+        non_relevant_doc_ids: set = {},
         reverse: bool = True,
     ) -> list:
         """
@@ -91,6 +89,12 @@ class VectorSpaceModel:
         Uses either "inner-product" or "cosine" for similarity 
         Returns a list of tuples (docID, similarity)
         """
+        # Update using rocchio algorithm
+        if len(relevant_doc_ids) > 0 or len(non_relevant_doc_ids) > 0:
+            query_vector = self.rocchio.update_query_vector(
+                query_vector, relevant_doc_ids, non_relevant_doc_ids
+            )
+
         if similarity not in ["inner-product", "cosine"]:
             print("Similarity not defined")
             return None
