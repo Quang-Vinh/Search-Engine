@@ -26,6 +26,11 @@ python make_data.py --knn #For knn on reuters
 ```
 
 ## Usage
+Start the app by running
+```
+python search_engine_app.py
+```
+
 To query, type query in search box and click enter.  
 Click on course description for popup with more information.  
 Click on suggested query label to query with suggestion.
