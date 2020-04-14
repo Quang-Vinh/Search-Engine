@@ -36,9 +36,9 @@ from boolean_retrieval import BooleanRetrievalModel
 from corpus_access import contains_topic, corpora, get_corpus_texts, reuters_topics
 from inverted_index import InvertedIndex
 from query_completion import QueryCompleter
+from query_expansion import expand_query
 from spelling_correction import SpellingCorrector
 from vector_space_model import VectorSpaceModel
-from query_expansion import expand_query
 
 # Other
 from pathlib import Path
@@ -123,36 +123,44 @@ class SearchScreen(GridLayout):
 
         return
 
-    def search(self, expand=True):
+    def expand_query_search(self):
+
+        # Get expanded query
+        query_str = self.ids['search_query_input'].text
+        query_expanded = expand_query(query_str, self.model_selected)
+        query = self.vsm_models[self.corpus_selected].to_vector(query_str) if self.model_selected == 'vsm' else query_str
+
+        # Buttons for options
+        yes_btn = Button(text='Expanded', on_press = partial(self.search, query_expanded, query_str))
+        no_btn = Button(text='Original', on_press = partial(self.search, query, query_str))
+
+        # Popup
+        box_layout = BoxLayout(orientation='horizontal')
+        box_layout.add_widget(yes_btn)
+        box_layout.add_widget(no_btn)
+        query_expansion_popup = Popup()
+        query_expansion_popup.add_widget(box_layout)
+        query_expansion_popup.title = str(query_expanded)
+        query_expansion_popup.title_align = "center"
+        query_expansion_popup.size_hint = None, None
+        query_expansion_popup.size = 800, 400
+        query_expansion_popup.open()
+
+        return
+
+    def search(self, query, query_str, instance):
         """
         Onclick for button search for given search query
-        """
-        query = self.ids["search_query_input"].text
-        
-        if expand:
-            query_expansion_popup = Popup()
-            query_expansion_popup.title_align = "center"
-            query_expansion_popup.size_hint = None, None
-            query_expansion_popup.size = 400, 200
-            use_expansion_button = Button(text="Use expanded query")
-            use_expansion_button.size = 400, 20
-        
+        """        
         self.corpus_selected = (
             "uo_courses" if self.ids["uo_courses"].active else "reuters"
         )
 
         # Get search results
         if self.ids["vsm"].active:
-            if expand:
-                expanded_query = expand_query(query, 'vsm')
-                use_expansion_button.bind(on_press=partial(self.replace_query_nd_search, query))
-                query_expansion_popup.add_widget(use_expansion_button)
-                query_expansion_popup.title = str(expanded_query)
-                query_expansion_popup.open()
-            
-            relevant_doc_ids = relevance_feedback[self.corpus_selected][query][1]
-            non_relevant_doc_ids = relevance_feedback[self.corpus_selected][query][0]
-            results = self.vsm_models[self.corpus_selected].search(
+            relevant_doc_ids = relevance_feedback[self.corpus_selected][query_str][1]
+            non_relevant_doc_ids = relevance_feedback[self.corpus_selected][query_str][0]
+            results = self.vsm_models[self.corpus_selected].vector_search(
                 query,
                 include_similarities=True,
                 limit=10,
@@ -162,14 +170,6 @@ class SearchScreen(GridLayout):
             docIDs = [docID for docID, _ in results]
             scores = [score for _, score in results]
         elif self.ids["boolean"].active:
-            if expand:
-                expanded_query = expand_query(query, 'boolean')
-                use_expansion_button.bind(on_press=partial(self.replace_query_nd_search, expanded_query))
-                query_expansion_popup.add_widget(use_expansion_button)
-                query_expansion_popup.title = expanded_query
-                query_expansion_popup.open()
-            
-            print(query)
             docIDs = self.bool_models[self.corpus_selected].retrieve_results(query)
             scores = [1] * len(docIDs)
         else:
@@ -177,7 +177,7 @@ class SearchScreen(GridLayout):
 
         # Get suggested queries
         suggested_queries = self.spelling_correctors[self.corpus_selected].check_query(
-            query, limit=5
+            query_str, limit=5
         )
 
         # Update search results
@@ -334,7 +334,7 @@ class SearchScreen(GridLayout):
         self.ids["search_query_input"].text = suggested_query
 
         # Search
-        self.search()
+        # self.search()
         return
 
     def show_query_completions(self, query: str) -> None:
@@ -368,7 +368,7 @@ class SearchScreen(GridLayout):
         """
         completed_query = re.sub(r"[0-9]*\) ", "", instance.text, 1)
         self.ids["search_query_input"].text = completed_query
-        self.search()
+        # self.search()
         return
 
     def toggle_search_model(self) -> None:
@@ -384,14 +384,7 @@ class SearchScreen(GridLayout):
             "uo_courses" if self.ids["uo_courses"].active else "reuters"
         )
         return
-        
-    def replace_query_nd_search(self, new_text, instance) -> None:
-        '''
-        replaces query text with new text
-        '''
-        self.ids["search_query_input"].text = new_text
-        self.search(expand=False)
-        return
+
 
 class SearchEngineApp(App):
     def build(self):
