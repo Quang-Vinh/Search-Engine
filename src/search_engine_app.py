@@ -134,7 +134,6 @@ class SearchScreen(GridLayout):
         query_expansion_popup.title_align = "center"
         query_expansion_popup.size_hint = None, None
         query_expansion_popup.size = 200, 200
-        search_result_popup.add_widget(label)
         
         self.corpus_selected = (
             "uo_courses" if self.ids["uo_courses"].active else "reuters"
@@ -142,7 +141,6 @@ class SearchScreen(GridLayout):
 
         # Get search results
         if self.ids["vsm"].active:
-            expanded_query = expand_query(query, 'vsm')
             query_expansion_popup.open()
             relevant_doc_ids = relevance_feedback[self.corpus_selected][query][1]
             non_relevant_doc_ids = relevance_feedback[self.corpus_selected][query][0]
@@ -156,7 +154,6 @@ class SearchScreen(GridLayout):
             docIDs = [docID for docID, _ in results]
             scores = [score for _, score in results]
         elif self.ids["boolean"].active:
-            expanded_query = expand_query(query, 'boolean')
             query_expansion_popup.open()
             docIDs = self.bool_models[self.corpus_selected].retrieve_results(query)
             scores = [1] * len(docIDs)
