@@ -24,6 +24,7 @@
             size_hint_x: '0.5dp'
             orientation: 'vertical'
 
+            
             TextInput:
                 id: search_query_input
                 size_hint_y: '0.25dp'
@@ -61,6 +62,16 @@
                             cols: 1
                             # padding: 50
                             # spacing: 0, 50
+            
+            BoxLayout:
+                orietation: 'vertical'
+                Label:
+                    text: 'Reuters topic filter'
+                    size_hint_y: '0.25dp'
+                Button:
+                    text: 'Select topic'
+                    id: btn_dropdown
+                    size_hint_y: '0.25dp'
 
             BoxLayout:
                 orientation: 'horizontal'

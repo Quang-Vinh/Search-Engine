@@ -6,13 +6,22 @@ from inverted_index import InvertedIndex
 from kNN_reuters import kNN_reuters
 from preprocessing import preprocess_uo_courses, preprocess_reuters_all
 
+import argparse
 import os.path
 from pathlib import Path
 import pickle
 from pytictoc import TicToc
 
 
+
 if __name__ == "__main__":
+
+    # Parse cmd arguments
+    parser = argparse.ArgumentParser(description='Preprocess the data and create models')
+    parser.add_argument('--knn', action='store_true')
+    args = parser.parse_args()
+
+    # Path to store preprocessed models and data
     file_path = os.path.abspath(os.path.dirname(__file__))
     uo_courses_file_path = os.path.join(
         file_path, "../collections/raw/UofO_Courses.html"
@@ -95,29 +104,31 @@ if __name__ == "__main__":
     t.toc()
 
     # kNN predict topics
-    t.tic()
-    print("\nPredict unknown topics for Reuters collections")
 
-    # Split train and testing based on unknown topics
-    train_index = reuters_texts["topics"].apply(len) > 0
-    X = reuters_texts["body"]
-    X_train = X.loc[train_index]
-    X_test = X.loc[-train_index].reset_index(drop=True)
-    Y = reuters_texts["topics"]
-    Y_train = Y.loc[train_index]
-    Y_test = Y.loc[-train_index].reset_index(drop=True)
-    docIDs = reuters_texts["docID"]
-    docIDs_train = docIDs.loc[train_index].reset_index(drop=True)
+    if  args.knn:
+        t.tic()
+        print("\nPredict unknown topics for Reuters collections")
 
-    # Use k=5, common
-    knn = kNN_reuters(5)
-    knn.fit(X_train, Y_train, docIDs_train)
+        # Split train and testing based on unknown topics
+        train_index = reuters_texts["topics"].apply(len) > 0
+        X = reuters_texts["body"]
+        X_train = X.loc[train_index]
+        X_test = X.loc[-train_index].reset_index(drop=True)
+        Y = reuters_texts["topics"]
+        Y_train = Y.loc[train_index]
+        Y_test = Y.loc[-train_index].reset_index(drop=True)
+        docIDs = reuters_texts["docID"]
+        docIDs_train = docIDs.loc[train_index].reset_index(drop=True)
 
-    # Get predictions
-    predicted_topics = [knn.predict(X) for X in X_test]
-    reuters_texts.loc[~train_index, 'topics'] = predicted_topics
-    reuters_texts.to_csv(reuters_topics_out_path, index=False)
-    t.toc()
+        # Use k=5, common
+        knn = kNN_reuters(5)
+        knn.fit(X_train, Y_train, docIDs_train)
+
+        # Get predictions
+        predicted_topics = [knn.predict(X) for X in X_test]
+        reuters_texts.loc[~train_index, 'topics'] = predicted_topics
+        reuters_texts.to_csv(reuters_topics_out_path, index=False)
+        t.toc()
 
     print("\nCompleted preprocessing total time:")
     tictoc.toc()

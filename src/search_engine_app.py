@@ -12,6 +12,7 @@ from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button, ButtonBehavior
 from kivy.uix.checkbox import CheckBox
+from kivy.uix.dropdown import DropDown
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
@@ -32,7 +33,7 @@ from win32api import GetSystemMetrics
 # Search engine modules
 from bigram_language_model import BigramLanguageModel
 from boolean_retrieval import BooleanRetrievalModel
-from corpus_access import get_corpus_texts
+from corpus_access import contains_topic, corpora, get_corpus_texts, reuters_topics
 from inverted_index import InvertedIndex
 from query_completion import QueryCompleter
 from spelling_correction import SpellingCorrector
@@ -100,18 +101,31 @@ class SearchScreen(GridLayout):
     model_selected = "vsm"
     corpus_selected = "uo_courses"
 
-    layout_content = ObjectProperty(None)
 
     # https://stackoverflow.com/questions/26686631/how-do-you-scroll-a-gridlayout-inside-kivy-scrollview
     def __init__(self, **kwargs):
         super(SearchScreen, self).__init__(**kwargs)
         self.layout_content.bind(minimum_height=self.layout_content.setter("height"))
 
+        # Setup dropdown https://kivy.org/doc/stable/api-kivy.uix.dropdown.html
+        self.dropdown = DropDown()
+        topics = ['Select topic'] + list(reuters_topics)
+        for topic in topics:
+            btn = Button(text=topic, size_hint_y=None, height=44)
+            btn.bind(on_release=lambda btn: self.dropdown.select(btn.text))
+            self.dropdown.add_widget(btn)
+        btn_dropdown = self.ids['btn_dropdown']
+        btn_dropdown.bind(on_release=self.dropdown.open)
+        self.dropdown.bind(on_select=lambda isinstance, x: setattr(btn_dropdown, 'text', x))
+
+        layout_content = ObjectProperty(None)
+
+        return
+
     def search(self):
         """
         Onclick for button search for given search query
         """
-
         query = self.ids["search_query_input"].text
         self.corpus_selected = (
             "uo_courses" if self.ids["uo_courses"].active else "reuters"
@@ -135,7 +149,6 @@ class SearchScreen(GridLayout):
             scores = [1] * len(docIDs)
         else:
             return
-        search_results = get_corpus_texts(self.corpus_selected, docIDs)
 
         # Get suggested queries
         suggested_queries = self.spelling_correctors[self.corpus_selected].check_query(
@@ -143,11 +156,23 @@ class SearchScreen(GridLayout):
         )
 
         # Update search results
+        topic = self.ids['btn_dropdown'].text
+
+        search_results = corpora[self.corpus_selected].loc[docIDs]
         search_results["score"] = scores
+
+        # Get subset of texts of given topic
+        if topic != 'Select topic' and self.corpus_selected == "reuters":
+            topic_filter = contains_topic(search_results["topics"], topic)
+            search_results = search_results.loc[topic_filter]
+        
         self.show_search_results(search_results)
 
         # Update suggested queries
         self.show_suggested_queries(suggested_queries)
+
+        # Add bind again, bugs for some reason
+        self.ids['btn_dropdown'].bind(on_release=self.dropdown.open)
 
         return
 
@@ -171,11 +196,11 @@ class SearchScreen(GridLayout):
         for docID, doc in search_results.iterrows():
             # Add course info
             title = doc["title"]
-            title = title[:20] if len(title) > 20 else title
+            title = title[:50] if len(title) > 50 else title
             body = doc["body"]
             excerpt = body[:150] if len(body) > 150 else body
             excerpt = textwrap.fill(excerpt, 75)
-            search_result = LabelButton(text=f"{docID}\n{excerpt}", size_hint=(1, None))
+            search_result = LabelButton(text=f"{docID} - {title}\n{excerpt}", size_hint=(1, None))
             search_result.bind(on_press=self.show_search_result_popup)
             search_results_grid.add_widget(search_result)
 
@@ -226,7 +251,7 @@ class SearchScreen(GridLayout):
         Open a popup for clicked on search result to show entire search result body
         """
 
-        docID = instance.text.split("\n")[0].strip()
+        docID = instance.text.split("-")[0].strip()
         if self.corpus_selected == "reuters":
             docID = int(docID)
 

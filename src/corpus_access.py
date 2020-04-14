@@ -23,7 +23,6 @@ def _convert_topic_to_array(topics_list: pd.Series) -> List[List[str]]:
         topics_list.append(topics)
     return topics_list
 
-
 def get_corpus_texts(corpus: str, docIDs: list, topic: str = None) -> pd.DataFrame:
     """Returns documents containing matching docIDs for given corpus in same order as input docIDs list filtered by topic
     
@@ -39,13 +38,13 @@ def get_corpus_texts(corpus: str, docIDs: list, topic: str = None) -> pd.DataFra
 
     # Get subset of texts of given topic
     if topic and corpus == "reuters":
-        topic_filter = _contains_topic(results["topics"], topic)
+        topic_filter = contains_topic(results["topics"], topic)
         results = results.loc[topic_filter]
 
     return results
 
 
-def _contains_topic(topics_list: List[str], topic: str) -> List[bool]:
+def contains_topic(topics_list: List[str], topic: str) -> List[bool]:
     """Checks which indices in topics list contains the topic
     
     Arguments:
