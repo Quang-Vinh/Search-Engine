@@ -34,7 +34,6 @@ def expand_term(query, similarity_threshold=0.5, score=0.25):
     expansion = [(x.name(), score) for x in most_common_query_sense.lemmas()]
     if len(expansion) == 1:
         expansion = [(x.name(), score) for x in most_common_query_sense.hypernyms()[0].lemmas()]
-    print(expansion)
     
     for i in expansion:
         if i[0] != query[0][0]:
@@ -126,5 +125,3 @@ def inter_model_2_vsm(query):
         for j in synonym_groups[1]:
                 expanded_query.append(j)
     return expanded_query
-    
-print(expand_query('hello', 'boolean'))
