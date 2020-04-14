@@ -76,7 +76,10 @@ def get_most_similar_synsets(term_1, term_2):
             if similarity > max_similarity:
                 max_similarity = similarity
                 best_pair = (syn1, syn2)
-    return best_pair, max_similarity
+    if best_pair:
+        return best_pair, max_similarity
+    else:
+        return None, -1
 
 
 
@@ -100,13 +103,12 @@ def inter_model_2_boolean(query, raw_query_str):
     '''
     takes a query in intermodel representation and outputs the query in boolean form for the boolean model
     '''
-    print(query)
     expanded_query = copy.deepcopy(raw_query_str)
     
     for syn_group in query:
         synonyms = [x[0] for x in syn_group[1]]
         boolean_syngroup_str = ' OR '.join(synonyms)
-        expanded_query.replace(syn_group[0], boolean_syngroup_str)
+        expanded_query = expanded_query.replace(syn_group[0], boolean_syngroup_str)
     return expanded_query
 
 def inter_model_2_vsm(query):
@@ -119,15 +121,3 @@ def inter_model_2_vsm(query):
                 expanded_query.append(j)
     return expanded_query
     
-#test
-print(get_most_similar_synsets("cat", "ocean"))
-
-boolean_query = "money AND (cash OR coin)"
-inter_model = get_inter_model(boolean_query)
-print("result : ")
-print(expand_query(boolean_query, "boolean"))
-
-vector_query = "money cash coin"
-inter_model = get_inter_model(vector_query)
-print("result : ")
-print(expand_query(vector_query, "vsm"))
