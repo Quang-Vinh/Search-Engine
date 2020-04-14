@@ -14,14 +14,14 @@ def expand_query(user_query, model):
     query = get_inter_model(user_query)
     
     if len(query) > 1:
-        query = expand_term_multiple(query, similarity_threshold=0)
+        expanded_query = expand_term_multiple(query, similarity_threshold=0)
     else:
         print('todo')
     
     if model == "boolean":
-        return inter_model_2_boolean(query, user_query)
+        return inter_model_2_boolean(expanded_query, user_query)
     elif model == "vsm":
-        return inter_model_2_vsm(query)
+        return inter_model_2_vsm(expanded_query)
 
 def expand_term(term, similarity_threshold=0.5, include_hypernyms=False):
     '''
@@ -108,7 +108,7 @@ def inter_model_2_boolean(query, raw_query_str):
     for syn_group in query:
         synonyms = [x[0] for x in syn_group[1]]
         boolean_syngroup_str = ' OR '.join(synonyms)
-        expanded_query = expanded_query.replace(syn_group[0], boolean_syngroup_str)
+        expanded_query = expanded_query.replace(syn_group[0], '(' + boolean_syngroup_str + ')')
     return expanded_query
 
 def inter_model_2_vsm(query):
