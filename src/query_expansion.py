@@ -16,25 +16,30 @@ def expand_query(user_query, model):
     
     if len(query) > 1:
         query = expand_term_multiple(query, similarity_threshold=0)
-    if len(query) <= 1 or use_single:
-        print('todo')
+    else:
+        query = expand_term(query)
     
     if model == "boolean":
         return inter_model_2_boolean(query, user_query)
     elif model == "vsm":
         return inter_model_2_vsm(query)
 
-def expand_term(term, similarity_threshold=0.5, include_hypernyms=False):
+def expand_term(query, similarity_threshold=0.5, score=0.25):
     '''
-    expands term, returning a list containing itself and other terms in the wordnet with enough similarity
+    expands single term query (no comparisons between query terms is performed)
+    uses the first one as the synsets are ordered by prevalence of use
+    if no synonyms of that sense exist, then a hypernym is offered
     '''
-    expanded_term = [term]
+    most_common_query_sense = wordnet.synsets(query[0][0])[0]
+    expansion = [(x.name(), score) for x in most_common_query_sense.lemmas()]
+    if len(expansion) == 1:
+        expansion = [(x.name(), score) for x in most_common_query_sense.hypernyms()[0].lemmas()]
+    print(expansion)
     
-    synonyms = wordnet.synset(term)
-    for synonym in wordnet:
-        print(synonym)
-    
-    return expanded_term
+    for i in expansion:
+        if i[0] != query[0][0]:
+            query[0][1].append(i)
+    return query
     
     
 def expand_term_multiple(query, similarity_threshold=0.5, include_hypernyms=False):
