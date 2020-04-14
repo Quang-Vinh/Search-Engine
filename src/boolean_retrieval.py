@@ -3,6 +3,7 @@ import pickle
 import dictionary
 import wildcard_management
 import sentence_preprocessing
+from nltk.stem import PorterStemmer
 
 
 class BooleanRetrievalModel:
@@ -16,7 +17,7 @@ class BooleanRetrievalModel:
 
     def resolve_single_term(self, term, index):
         # returns the docIDs for a single search term
-        term = sentence_preprocessing.tokenize(term)
+        term = sentence_preprocessing.stem_tokens(sentence_preprocessing.tokenize(term), PorterStemmer())
         if term[0].find("*") >= 0:
             return self.resolve_wildcard_term(term[0], index)
         else:
