@@ -30,7 +30,10 @@ def expand_term(query, similarity_threshold=0.5, score=0.25):
     uses the first one as the synsets are ordered by prevalence of use
     if no synonyms of that sense exist, then a hypernym is offered
     '''
-    most_common_query_sense = wordnet.synsets(query[0][0])[0]
+    query_synset = wordnet.synsets(query[0][0])
+    if len(query_synset) < 1:
+        return query
+    most_common_query_sense = query_synset[0]
     expansion = [(x.name(), score) for x in most_common_query_sense.lemmas()]
     if len(expansion) == 1:
         expansion = [(x.name(), score) for x in most_common_query_sense.hypernyms()[0].lemmas()]
@@ -72,6 +75,8 @@ def get_most_similar_synsets(term_1, term_2):
     '''
     term_1_syns = wordnet.synsets(term_1)
     term_2_syns = wordnet.synsets(term_2)
+    if len(term_1_syns) < 1 or len(term_2_syns) < 1:
+        return None, -1
     max_similarity = 0
     best_pair = None
     
