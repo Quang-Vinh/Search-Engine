@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 from dictionary import Dictionary
 from inverted_index import InvertedIndex
+from sentence_preprocessing import tokenize
 from typing import List, Tuple
 
 
@@ -37,8 +38,7 @@ class VectorSpaceModel:
         Returns:
             List[Tuple[str, float]] -- Sparse vector 
         """
-        # Preprocess query string
-        query_tokens = set(self.dictionary.preprocess_document(query))
+        query_tokens = tokenize(query)
 
         # Convert to vector with weights of 1
         query_vector = [(query_token, 1) for query_token in query_tokens]
