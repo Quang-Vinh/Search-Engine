@@ -40,7 +40,7 @@ pypiwin32==223
 python-dateutil==2.8.1
 pytictoc==1.5.0
 pytz==2019.3
-pywin32==227
+pywin32==301
 pyzmq==18.1.1
 regex==2020.4.4
 requests==2.22.0
