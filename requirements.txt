@@ -28,7 +28,7 @@ lazy-object-proxy==1.4.3
 lxml==4.6.5
 mccabe==0.6.1
 nltk==3.6.5
-numpy==1.18.1
+numpy==1.21.0
 pandas==1.0.1
 parso==0.6.1
 pathspec==0.8.0
